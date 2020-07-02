@@ -40,6 +40,7 @@
         questionsPanelCanvas: null,
         questionsResetCanvas: null,
         questionsSubmitCanvas: null,
+        setAlpha: .1
       }
     },
     async mounted () {
@@ -75,13 +76,15 @@
       })
 
       // 插入背景
-      this.stage.addChild(exportScence)
+      // this.stage.addChild(exportScence)
 
-      this.questionsPanelCanvas = this.createPanel()
+      // this.questionsPanelCanvas = this.createPanel()
 
       this.questionsResetCanvas = this.createRestButtons()
 
-      this.questionsSubmitCanvas = this.createSubmitButton()
+      // this.questionsSubmitCanvas = this.createSubmitButton()
+
+      this.questionsResetCanvas.visible = true
 
       //结束场景
 
@@ -136,7 +139,7 @@
           y: 320 - (this.questions.left.length * 10),
           images: { questionLeft, questionRight, errorLine, rightLine, questionsImage },
           questions: this.questions,
-          alpha: 1,
+          alpha: this.setAlpha,
           isSubmit: this.isSubmit
         })
 
@@ -151,7 +154,7 @@
           images: this.assets.submitButton,
           rect: [0, 0, 329, 96],
           visible: true,
-          alpha: 1,
+          alpha: this.setAlpha,
         })
 
         subBtn.on(Hilo.event.POINTER_START, (e) => {
@@ -183,7 +186,8 @@
           height: 1080,
           rect: [-(1920 - 758) / 2, -(1080 - 404) / 2, 1920, 1080],
           isAllRight: this.isAllRight && this.questions.left.length,
-          visible: true
+          visible: true,
+          alpha: this.setAlpha
         })
 
         // 插入结果 model
@@ -209,7 +213,8 @@
           images: isOnlyReset ? [this.assets.resetBtn] : [this.assets.rightBtn, this.assets.resetBtn],
           rect: [0, 0, 329, 96],
           isOnlyReset: isOnlyReset,
-          visible: false
+          visible: false,
+          alpha: this.setAlpha
         })
         resetButtons.on(Hilo.event.POINTER_START, (e) => {
 
