@@ -70,4 +70,20 @@ countdown(){
   //     }
   //   )
   // })
+
+  // questionsRight[index] = new Hilo.Graphics({
+  //   x: this.rightX,
+  //   y: index * this.distance,
+  //   scaleX: 1,
+  //   scaleY: 1,
+  //   width: rect[2],
+  //   height: rect[3],
+  //   visible: true
+  // })
+  // const img = new Image()
+  // img.src = item.text
+  // img.onload = () => {
+  //   img.onload = null
+  //   questionsRight[index].beginBitmapFill(img, 'no-repeat').drawRoundRect(0, 0, rect[2], rect[3], 5).endFill().addTo(this)
+  // }
 }

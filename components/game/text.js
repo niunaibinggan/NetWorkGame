@@ -21,15 +21,15 @@ export default class GameText extends Hilo.Text {
       )}px Myriad Pro, Helvetica Neue, Helvetica, Arial, Microsoft Yahei,Hiragino Sans GB, Heiti SC, WenQuanYi Micro Hei, sans-serif`
 
     properties.scaleX = properties.scaleY = fixIOSScale(fontSize)
-    properties.maxWidth = reTextWidth / fixIOSScale(fontSize)
-    properties.width = reTextWidth / fixIOSScale(fontSize)
-    if (properties.textOverflow) {
-      properties.text = this.textOverWidth(
-        properties.font,
-        properties.text || '',
-        properties.reTextWidth - properties.fontSize
-      )
-    }
+    // properties.maxWidth = reTextWidth / fixIOSScale(fontSize)
+    // properties.width = reTextWidth / fixIOSScale(fontSize)
+    // if (properties.textOverflow) {
+    //   properties.text = this.textOverWidth(
+    //     properties.font,
+    //     properties.text || '',
+    //     properties.reTextWidth - properties.fontSize
+    //   )
+    // }
     super(properties)
   }
 }

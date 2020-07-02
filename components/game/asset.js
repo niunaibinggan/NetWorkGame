@@ -2,10 +2,12 @@ import Hilo from 'hilojs'
 
 export default function (data) {
 
+  const isTest = (data.type === 'text')
+  const questionsImageId = "questionsImage"
+
   return Hilo.Class.create({
     Mixes: Hilo.EventMixin,
     queue: null,
-    layout: {},
     bg: null,
     answerError: null,
     questionLeft: null,
@@ -18,13 +20,14 @@ export default function (data) {
     rightModel: null,
     rightBtn: null,
     resetBtn: null,
+    questionsImage: [],
 
     async load () {
       const resources = [
         { id: 'bg', src: require('~/assets/bg.png') },
         { id: 'answerError', src: require('~/assets/error.png') },
-        { id: 'questionLeft', src: require('~/assets/question_left.png') },
-        { id: 'questionRight', src: require('~/assets/question_right.png') },
+        { id: 'questionLeft', src: isTest ? require('~/assets/question_left.png') : require('~/assets/question_image_left.png') },
+        { id: 'questionRight', src: isTest ? require('~/assets/question_right.png') : require('~/assets/question_image_right.png') },
         { id: 'titleBg', src: require('~/assets/title.png') },
         { id: 'errorLine', src: require('~/assets/error-line.png') },
         { id: 'rightLine', src: require('~/assets/right-line.png') },
@@ -35,7 +38,13 @@ export default function (data) {
         { id: 'resetBtn', src: require('~/assets/reset_btn.png') },
       ]
 
-      this.layout = resources
+
+      if (!isTest) {
+        data.right.forEach((item, index) => {
+          resources.push({ id: questionsImageId + index, src: item.text })
+        })
+      }
+      console.log(resources)
 
       this.queue = new Hilo.LoadQueue()
       this.queue.add(resources)
@@ -72,6 +81,13 @@ export default function (data) {
       this.rightBtn = this.queue.get("rightBtn").content
       this.resetBtn = this.queue.get("resetBtn").content
 
+
+      if (!isTest) {
+        data.right.forEach((item, index) => {
+          this.questionsImage.push(this.queue.get(`${questionsImageId}${index}`).content)
+        })
+      }
+      // console.log(this.queue.get("questionsImage02").content)
       this.queue.off('complete')
       this.fire('complete')
     },

@@ -57,7 +57,9 @@
       const { bg, titleBg, questionLeft,
         questionRight, errorLine, rightLine,
         submitButton, rightModel, errorModel,
-        rightBtn, resetBtn } = this.assets
+        rightBtn, resetBtn, questionsImage } = this.assets
+
+      console.log(questionsImage)
 
       // 初始化背景
       this.initBackground()
@@ -75,8 +77,8 @@
       // 插入题目 两个板块之间的距离 300 每个背景板的长度 499 106
       const panel = new QuestionsPanel({
         x: (1920 - 499 * 2 - 300) / 2,
-        y: 320,
-        images: { questionLeft, questionRight, errorLine, rightLine },
+        y: 320 - (this.questions.left.length * 10),
+        images: { questionLeft, questionRight, errorLine, rightLine, questionsImage },
         questions: this.questions,
       })
 
@@ -130,15 +132,15 @@
 
       // // 插入背景
       // this.stage.addChild(exportScence)
-      // // 插入题目
-      // this.stage.addChild(panel)
+      // 插入题目
+      this.stage.addChild(panel)
       // // 插入提交按钮
       // this.stage.addChild(subBtn)
       // // 插入结果 model
       // this.stage.addChild(resultModel)
       // // 插入重置按钮
       // this.stage.addChild(resetButtons)
-      // //结束场景
+      //结束场景
 
     },
     methods: {
@@ -157,6 +159,10 @@
         if (!questions) return this.$router.replace('/config')
 
         this.questions = JSON.parse(questions)
+        // this.questions.type = 'text'
+        this.questions.right.length = 2
+        // this.questions.right[0].text = '33333'
+        // this.questions.right[1].text = '33333'
       },
       initBackground () {
         const oCanvas = document.querySelector('canvas')

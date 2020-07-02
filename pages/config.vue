@@ -142,6 +142,7 @@
         return arr
       },
       addQuestion () {
+        this.target = this.isText ? 5 : 4
         if (this[this.questionsType].left.length >= this.target) {
           this.tips = `最多添加${this.target}道题目`
           this.tipsModel()
@@ -193,6 +194,8 @@
           this.tipsModel()
           return
         }
+
+        this[this.questionsType].type = this.isText ? 'text' : 'image'
 
         let setQuestion = this[this.questionsType]
 
