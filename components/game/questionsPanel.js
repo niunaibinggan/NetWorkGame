@@ -2,8 +2,9 @@ import Hilo from 'hilojs'
 import Text from './text'
 export default class QuestionsPanel extends Hilo.Container {
   constructor(properties) {
-
     super(properties)
+
+    // = this.isAnswerRight
 
     this.isText = (properties.questions.type === 'text')
 
@@ -17,20 +18,24 @@ export default class QuestionsPanel extends Hilo.Container {
 
     this.initQuestion(properties)
   }
-  // selected = [{ realId: 0 }, { realId: 1 }]
-  isText = false
+  // this.selected = [{ realId: 0 }, { realId: 1 }]
   selected = []
+  isText = false
   rightX = 800
   distance = null
+  setAnswerQuestionsId = []
   setAnswer = []
   rotationDeg = 0
   lineX = null
   lineBase = null
+  isSubmit = false
 
   // Math.atan2(1, 1)*180/Math.PI
 
   line (properties) {
+
     if (!this.verifyRepeat()) return
+
     const basedistanceLeft = (this.selected[0].realId) * this.distance + 50
     const basedistanceRigt = (this.selected[1].realId) * this.distance + 50
     // 设置旋转角度
@@ -68,8 +73,8 @@ export default class QuestionsPanel extends Hilo.Container {
     )
     // 存储数据
     this.setAnswer.push([this.selected[0].realId, this.selected[1].realId])
+    this.setAnswerQuestionsId.push([this.selected[0].questionId, this.selected[1].questionId])
     this.selected = []
-
   }
 
   initQuestion (properties) {
@@ -218,6 +223,7 @@ export default class QuestionsPanel extends Hilo.Container {
           }
         }
       )
+      if (this.isSubmit) return
       this.line(properties)
     })
   }

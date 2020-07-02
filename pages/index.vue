@@ -33,7 +33,13 @@
           // ],
           // title: '连线游戏'
         },
-        isAllRight: false
+        answerIds: [],
+        isAllAnswer: false,
+        isAllRight: false,
+        isSubmit: false,
+        questionsPanelCanvas: null,
+        questionsResetCanvas: null,
+        questionsSubmitCanvas: null,
       }
     },
     async mounted () {
@@ -54,12 +60,7 @@
 
       const oCanvas = document.querySelector('canvas')
 
-      const { bg, titleBg, questionLeft,
-        questionRight, errorLine, rightLine,
-        submitButton, rightModel, errorModel,
-        rightBtn, resetBtn, questionsImage } = this.assets
-
-      console.log(questionsImage)
+      const { bg, titleBg } = this.assets
 
       // 初始化背景
       this.initBackground()
@@ -69,77 +70,19 @@
         x: 0,
         y: 0,
         questions: this.questions,
-        images: { bg, titleBg, questionLeft, questionRight, errorLine, rightLine },
+        images: { bg, titleBg },
         title: this.questions.title,
-        // initTimeTranslate: this.timeTranslate,
       })
 
-      // 插入题目 两个板块之间的距离 300 每个背景板的长度 499 106
-      const panel = new QuestionsPanel({
-        x: (1920 - 499 * 2 - 300) / 2,
-        y: 320 - (this.questions.left.length * 10),
-        images: { questionLeft, questionRight, errorLine, rightLine, questionsImage },
-        questions: this.questions,
-      })
+      // 插入背景
+      this.stage.addChild(exportScence)
 
-      // 准备按钮 canvas 1920 1080 , subButton 329 96
-      const subBtn = new SubmitButton({
-        x: (1920 - 329) / 2,
-        y: (1080 - 96) / 2 + 470,
-        images: submitButton,
-        rect: [0, 0, 329, 96],
-        visible: true,
-      })
+      this.questionsPanelCanvas = this.createPanel()
 
-      subBtn.on(Hilo.event.POINTER_START, (e) => {
-        resultModel.visible = true
-      })
+      this.questionsResetCanvas = this.createRestButtons()
 
-      // 重置按钮
-      const repeatX = this.isAllRight ? (1920 - 329) / 2 : (1920 - 329 * 2 - 400) / 2
+      this.questionsSubmitCanvas = this.createSubmitButton()
 
-      const resetButtons = new ResetButton({
-        x: repeatX,
-        y: (1920 - 96) / 2 + 50,
-        images: this.isAllRight ? [resetBtn] : [rightBtn, resetBtn],
-        rect: [0, 0, 329, 96],
-        isAllRight: this.isAllRight,
-        visible: false
-      })
-
-      // console.log(resetButtons.children[0])
-      resetButtons.children[0].on(Hilo.event.POINTER_START, (e) => {
-        console.log(22)
-      })
-
-      // 结果 Model
-      const resultModel = new ResultModel({
-        x: 0,
-        y: 0,
-        images: { rightModel, errorModel },
-        width: 1920,
-        height: 1080,
-        rect: [-(1920 - 758) / 2, -(1080 - 404) / 2, 1920, 1080],
-        isAllRight: this.isAllRight,
-        visible: false
-      })
-
-      resultModel.on(Hilo.event.POINTER_START, (e) => {
-        resultModel.visible = false
-        resetButtons.visible = true
-        subBtn.visible = false
-      })
-
-      // // 插入背景
-      // this.stage.addChild(exportScence)
-      // 插入题目
-      this.stage.addChild(panel)
-      // // 插入提交按钮
-      // this.stage.addChild(subBtn)
-      // // 插入结果 model
-      // this.stage.addChild(resultModel)
-      // // 插入重置按钮
-      // this.stage.addChild(resetButtons)
       //结束场景
 
     },
@@ -160,9 +103,11 @@
 
         this.questions = JSON.parse(questions)
         // this.questions.type = 'text'
-        this.questions.right.length = 2
-        // this.questions.right[0].text = '33333'
+        // this.questions.right.length = 2
+        // this.questions.right[0].text = '1+3+9'
         // this.questions.right[1].text = '33333'
+        // this.questions.left[1].text = '1+3+9'
+        // this.questions.left[0].text = '1+3+9+1'
       },
       initBackground () {
         const oCanvas = document.querySelector('canvas')
@@ -183,17 +128,114 @@
 
         oContainer.insertBefore(oBgWarpper, this.stage.canvas);
       },
-      initTimeTranslate () {
-        let minutes = Math.floor(this.questions.time / 60)
+      createPanel () {
+        const { questionLeft, questionRight, errorLine, rightLine, questionsImage } = this.assets
+        // 插入题目 两个板块之间的距离 300 每个背景板的长度 499 106
+        const panel = new QuestionsPanel({
+          x: (1920 - 499 * 2 - 300) / 2,
+          y: 320 - (this.questions.left.length * 10),
+          images: { questionLeft, questionRight, errorLine, rightLine, questionsImage },
+          questions: this.questions,
+          alpha: 1,
+          isSubmit: this.isSubmit
+        })
 
-        let seconds = this.questions.time - minutes * 60
+        this.stage.addChild(panel)
+        return panel
+      },
+      createSubmitButton () {
+        // 准备按钮 canvas 1920 1080 , subButton 329 96
+        const subBtn = new SubmitButton({
+          x: (1920 - 329) / 2,
+          y: (1080 - 96) / 2 + 470,
+          images: this.assets.submitButton,
+          rect: [0, 0, 329, 96],
+          visible: true,
+          alpha: 1,
+        })
 
-        minutes = Number(minutes) < 10 ? `0${minutes}` : minutes
+        subBtn.on(Hilo.event.POINTER_START, (e) => {
 
-        seconds = Number(seconds) < 10 ? `0${seconds}` : seconds
+          this.answerIds = this.questionsPanelCanvas.setAnswerQuestionsId
 
-        this.timeTranslate = `${minutes}:${seconds}`
-      }
+          if (!this.answerIds.length) return
+
+          this.isSubmit = true
+
+          this.questionsPanelCanvas.isSubmit = true
+
+          this.isAllAnswer = this.questionsPanelCanvas.setAnswerQuestionsId.length === this.questions.left.length
+
+          this.isAllRight = this.questionsPanelCanvas.setAnswerQuestionsId.every(item => item[0] == item[1])
+
+          this.createModel(subBtn)
+        })
+        this.stage.addChild(subBtn)
+
+        return subBtn
+      },
+      createModel (subBtn) {
+        const resultModel = new ResultModel({
+          x: 0,
+          y: 0,
+          images: { rightModel: this.assets.rightModel, errorModel: this.assets.errorModel },
+          width: 1920,
+          height: 1080,
+          rect: [-(1920 - 758) / 2, -(1080 - 404) / 2, 1920, 1080],
+          isAllRight: this.isAllRight && this.questions.left.length,
+          visible: true
+        })
+
+        // 插入结果 model
+        this.stage.addChild(resultModel)
+
+        resultModel.on(Hilo.event.POINTER_START, (e) => {
+          this.questionsSubmitCanvas.visible = false
+          this.stage.removeChild(resultModel)
+          this.questionsResetCanvas.visible = true
+        })
+
+        return resultModel
+      },
+      createRestButtons () {
+        // 重置按钮
+        const isOnlyReset = this.isAllRight && this.isAllAnswer
+
+        const repeatX = isOnlyReset ? (1920 - 329) / 2 : (1920 - 329 * 2 - 300) / 2
+
+        const resetButtons = new ResetButton({
+          x: repeatX,
+          y: (1920 - 96) / 2 + 50,
+          images: isOnlyReset ? [this.assets.resetBtn] : [this.assets.rightBtn, this.assets.resetBtn],
+          rect: [0, 0, 329, 96],
+          isOnlyReset: isOnlyReset,
+          visible: false
+        })
+        resetButtons.on(Hilo.event.POINTER_START, (e) => {
+
+          this.stage.removeChild(this.questionsPanelCanvas)
+
+          this.questions.right = this.shuffle(this.questions.right)
+
+          this.createPanel()
+
+          this.questionsResetCanvas.visible = false
+          this.questionsSubmitCanvas.visible = true
+        })
+
+        this.stage.addChild(resetButtons)
+
+        return resetButtons
+      },
+      shuffle (arr) {
+        for (var i = arr.length - 1; i >= 0; i--) {
+          var randomIndex = Math.floor(Math.random() * (i + 1));
+          var itemAtIndex = arr[randomIndex];
+          arr[randomIndex] = arr[i];
+          arr[i] = itemAtIndex;
+        }
+        return arr
+      },
     }
   }
 </script>

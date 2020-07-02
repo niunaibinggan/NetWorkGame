@@ -18,7 +18,7 @@ export default class ExportScence extends Hilo.Container {
 
     // 时间背景
     new Hilo.Bitmap({
-      x: 641,
+      x: (1920 - 582) / 2,
       y: 90,
       image: properties.images.titleBg,
       rect: [0, 0, 582, 146,],
@@ -38,8 +38,8 @@ export default class ExportScence extends Hilo.Container {
       visible: true,
       cc: 3,
       alpha: 1,
-      reallyTextWidth: 638,
-      x: (1920 - 638) / 2 - 90,
+      width: 638,
+      x: (1920 - 638) / 2,
       y: 110,
       color: '#ffffff',
     }).addTo(this)

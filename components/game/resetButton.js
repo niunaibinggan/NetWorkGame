@@ -11,7 +11,7 @@ export default class ResetButton extends Hilo.Container {
 
     properties.images.forEach((item, index) => {
       buttonName[index] = new Hilo.Bitmap({
-        x: index * 600,
+        x: index * 630,
         y: 0,
         image: item,
         rect: properties.rect,
@@ -20,7 +20,7 @@ export default class ResetButton extends Hilo.Container {
         scaleY: 1
       }).addTo(this)
 
-      const initX = index * 600
+      const initX = index * 630
       const initY = 0
 
       buttonName[index].on(Hilo.event.POINTER_START, (e) => {

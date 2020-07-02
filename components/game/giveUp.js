@@ -87,3 +87,15 @@ countdown(){
   //   questionsRight[index].beginBitmapFill(img, 'no-repeat').drawRoundRect(0, 0, rect[2], rect[3], 5).endFill().addTo(this)
   // }
 }
+
+initTimeTranslate() {
+  let minutes = Math.floor(this.questions.time / 60)
+
+  let seconds = this.questions.time - minutes * 60
+
+  minutes = Number(minutes) < 10 ? `0${minutes}` : minutes
+
+  seconds = Number(seconds) < 10 ? `0${seconds}` : seconds
+
+  this.timeTranslate = `${minutes}:${seconds}`
+}
