@@ -132,15 +132,6 @@
         this[this.questionsType].left.splice(index, 1)
         this[this.questionsType].right.splice(index, 1)
       },
-      shuffle (arr) {
-        for (var i = arr.length - 1; i >= 0; i--) {
-          var randomIndex = Math.floor(Math.random() * (i + 1));
-          var itemAtIndex = arr[randomIndex];
-          arr[randomIndex] = arr[i];
-          arr[i] = itemAtIndex;
-        }
-        return arr
-      },
       addQuestion () {
         this.target = this.isText ? 5 : 4
         if (this[this.questionsType].left.length >= this.target) {
@@ -198,8 +189,6 @@
         this[this.questionsType].type = this.isText ? 'text' : 'image'
 
         let setQuestion = this[this.questionsType]
-
-        setQuestion.right = this.shuffle(this[this.questionsType].right)
 
         localStorage.setItem('questionsConfig', JSON.stringify(setQuestion))
         // this.$router.replace('/')

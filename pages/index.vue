@@ -36,13 +36,11 @@
         answerQuestionsIds: [],
         answerRealIds: [],
         resultIds: [],
-        isAllAnswer: false,
         isAllRight: false,
-        isSubmit: false,
         questionsPanelCanvas: null,
         questionsResetCanvas: null,
         questionsSubmitCanvas: null,
-        setAlpha: 1
+        setAlpha: 1,
       }
     },
     async mounted () {
@@ -75,15 +73,11 @@
       })
 
       // 插入背景
-      // this.stage.addChild(exportScence)
+      this.stage.addChild(exportScence)
 
       this.questionsPanelCanvas = this.createPanel('panel')
 
-      this.questionsResetCanvas = this.createRestButtons()
-
       this.questionsSubmitCanvas = this.createSubmitButton()
-
-      // this.questionsResetCanvas.visible = true
 
       //结束场景
 
@@ -105,10 +99,7 @@
 
         this.questions = JSON.parse(questions)
 
-        this.questions.left.forEach((item, index) => {
-
-          this.resultIds[index] = [item.id, this.questions.right.findIndex(i => i.id === item.id)]
-        })
+        this.shuffle(this.questions.right)
 
         // this.questions.type = 'text'
         // this.questions.right.length = 2
@@ -116,7 +107,6 @@
         // this.questions.right[1].text = '33333'
         // this.questions.left[1].text = '1+3+9'
         // this.questions.left[0].text = '1+3+9+1'
-
 
       },
       initBackground () {
@@ -176,17 +166,11 @@
 
           if (this.answerQuestionsIds.length !== this.questions.left.length) return
 
-          // this.isSubmit = true
-
-          // this.questionsPanelCanvas.isSubmit = true
-
           // 移除作答模版
           this.stage.removeChild(this.questionsPanelCanvas)
 
           // 创建显示模版
           this.questionsPanelCanvas = this.createPanel('result')
-
-          this.isAllAnswer = this.answerQuestionsIds.length === this.questions.left.length
 
           this.isAllRight = this.answerQuestionsIds.every(item => item[0] == item[1])
 
@@ -213,6 +197,7 @@
         this.stage.addChild(resultModel)
 
         resultModel.on(Hilo.event.POINTER_START, (e) => {
+          this.questionsResetCanvas = this.createRestButtons()
           this.questionsSubmitCanvas.visible = false
           this.stage.removeChild(resultModel)
           this.questionsResetCanvas.visible = true
@@ -222,16 +207,14 @@
       },
       createRestButtons () {
         // 重置按钮
-        const isOnlyReset = this.isAllRight && this.isAllAnswer
-
-        const repeatX = isOnlyReset ? (1920 - 329) / 2 : (1920 - 329 * 2 - 300) / 2
+        const repeatX = this.isAllRight ? (1920 - 329) / 2 : (1920 - 329 * 2 - 300) / 2
 
         const resetButtons = new ResetButton({
           x: repeatX,
           y: (1920 - 96) / 2 + 50,
-          images: isOnlyReset ? [this.assets.resetBtn] : [this.assets.rightBtn, this.assets.resetBtn],
+          images: this.isAllRight ? [this.assets.resetBtn] : [this.assets.rightBtn, this.assets.resetBtn],
           rect: [0, 0, 329, 96],
-          isOnlyReset: isOnlyReset,
+          isOnlyReset: this.isAllRight,
           visible: false,
           alpha: this.setAlpha
         })
@@ -240,8 +223,9 @@
 
           // 移除显示结果panel
           this.stage.removeChild(this.questionsPanelCanvas)
+          this.questionsPanelCanvas = null
 
-          if (isOnlyReset) return this.resetHandel()
+          if (this.isAllRight) return this.resetHandel()
 
           e.eventTarget.id ? this.resetHandel() : this.seachHanel()
 
@@ -255,8 +239,12 @@
 
         this.questionsSubmitCanvas.visible = true
 
-        this.questions.right = this.shuffle(this.questions.right)
+        // 重置基础信息
+        this.shuffle(this.questions.right)
+        this.answerQuestionsIds = []
+        this.answerRealIds = []
 
+        // 重置后创建
         this.questionsPanelCanvas = this.createPanel('panel')
 
       },
@@ -271,7 +259,12 @@
           arr[randomIndex] = arr[i];
           arr[i] = itemAtIndex;
         }
-        return arr
+
+        this.questions.right = arr
+
+        this.questions.left.forEach((item, index) => {
+          this.resultIds[index] = [item.id, this.questions.right.findIndex(i => i.id === item.id)]
+        })
       },
     }
   }

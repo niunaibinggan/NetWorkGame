@@ -46,8 +46,6 @@ export default function (data) {
           resources.push({ id: questionsImageId + index, src: item.text })
         })
       }
-      console.log(resources)
-
       this.queue = new Hilo.LoadQueue()
       this.queue.add(resources)
       this.queue.on('load', this.onProcess.bind(this))

@@ -88,7 +88,7 @@ export default class ResultPanel extends Hilo.Container {
   resutlLine (properties) {
     this.resultIds.forEach((item, index) => {
 
-      const isError = properties.answerQuestionsIds[index][0] !== properties.answerQuestionsIds[index][1]
+      let isError = properties.answerQuestionsIds[index][0] !== properties.answerQuestionsIds[index][1]
 
       let images
 
@@ -105,13 +105,14 @@ export default class ResultPanel extends Hilo.Container {
         basedistanceRight = properties.answerRealIds[index][1] * this.distance + 50
 
       } else {
-        console.log(properties.images.tipsLine)
+
+        isError = !properties.answerRealIds.filter(o => o.join('') === item.join('')).length
 
         images = isError ? properties.images.tipsLine : properties.images.rightLine
 
-        basedistanceLeft = properties.answerQuestionsIds[index][0] * this.distance + 50
+        basedistanceLeft = item[0] * this.distance + 50
 
-        basedistanceRight = properties.answerQuestionsIds[index][1] * this.distance + 50
+        basedistanceRight = item[1] * this.distance + 50
       }
 
       // 设置旋转角度
