@@ -58,14 +58,14 @@ export default class ResultPanel extends Hilo.Container {
       y: 0,
     }).addTo(this)
   }
-  commonLine (left, right, image, isTween, type = 'panel') {
+  commonLine (left, right, image, isTween, type = 'panel', isError = false) {
     // 设置旋转角度
     this.rotationDeg = Math.atan2(right - left, this.lineBase) * 180 / Math.PI
 
     const rotateContainer = new Hilo.Container({
       rotation: this.rotationDeg,
       x: this.lineX - 5,
-      y: left,
+      y: this.isText ? left : left + 10,
     }).addTo(this.temporaryLinesContainer)
 
     // 设置背景图
@@ -94,6 +94,7 @@ export default class ResultPanel extends Hilo.Container {
         scaleX: 1,
         scaleY: 1,
         visible: true,
+        alpha: isError ? 1 : 0
       }).addTo(rotateContainer)
     }
 
@@ -152,7 +153,7 @@ export default class ResultPanel extends Hilo.Container {
         basedistanceRight = item[1] * this.distance + 50
       }
 
-      this.commonLine(basedistanceLeft, basedistanceRight, images, false, properties.type)
+      this.commonLine(basedistanceLeft, basedistanceRight, images, false, properties.type, isError)
     })
   }
 
@@ -189,7 +190,6 @@ export default class ResultPanel extends Hilo.Container {
         id: { realId: index, questionId: item.id },
         text: item.text,
         fontSize: this.isText ? 70 : 35,
-        // lineHeight: rect[3] * baseScale,
         bold: true,
         textAlign: 'center',
         visible: true,
@@ -197,8 +197,8 @@ export default class ResultPanel extends Hilo.Container {
         reTextWidth: rect[2] * baseScale,
         height: rect[3] * baseScale - (this.isText ? 15 : 50),
         x: leftX,
-        y: index * this.distance + (this.isText ? 20 : 50),
-        color: this.isText ? '#fff' : '#f7e55d',
+        y: index * this.distance + (this.isText ? 20 : 55),
+        color: this.isText ? '#fff' : '#fad35f',
       }).addTo(this.temporaryQuestionsContainer)
 
       this.panelClick('left',
@@ -259,7 +259,7 @@ export default class ResultPanel extends Hilo.Container {
         img.src = item.text
         img.onload = () => {
           img.onload = null
-          questionsRight[index].beginBitmapFill(img, 'no-repeat').drawRoundRect(0, 0, rect[2] * imageScale - 10, rect[3] * imageScale - 10, 20).endFill()
+          questionsRight[index].beginBitmapFill(img, 'no-repeat').drawRoundRect(0, 0, rect[2] * imageScale - 10, rect[3] * imageScale - 10, 20).endFill().addTo(this)
         }
       }
 
@@ -287,8 +287,8 @@ export default class ResultPanel extends Hilo.Container {
         target,
         {
           scaleX: targetScale, scaleY: targetScale,
-          x: initX - (rect[2] * baseScale * 0.05) / 2 - (this.isText ? 0 : 2),
-          y: initY - (rect[3] * baseScale * 0.05) / 2 - (this.isText ? 0 : 2)
+          x: initX - (rect[2] * 0.05) / 2 - (this.isText ? 0 : 8),
+          y: initY - (rect[3] * 0.05) / 2 - (this.isText ? 0 : 8)
         },
         {
           duration: 100,
