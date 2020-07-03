@@ -17,7 +17,8 @@ export default class ResetButton extends Hilo.Container {
         rect: properties.rect,
         visible: true,
         scaleX: 1,
-        scaleY: 1
+        scaleY: 1,
+        id: index,
       }).addTo(this)
 
       const initX = index * 630

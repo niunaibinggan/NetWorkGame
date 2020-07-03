@@ -9,7 +9,7 @@ export default function (data) {
     Mixes: Hilo.EventMixin,
     queue: null,
     bg: null,
-    answerError: null,
+    errorIcon: null,
     questionLeft: null,
     questionRight: null,
     titleBg: null,
@@ -20,12 +20,13 @@ export default function (data) {
     rightModel: null,
     rightBtn: null,
     resetBtn: null,
+    tipsLine: null,
     questionsImage: [],
 
     async load () {
       const resources = [
         { id: 'bg', src: require('~/assets/bg.png') },
-        { id: 'answerError', src: require('~/assets/error.png') },
+        { id: 'errorIcon', src: require('~/assets/error.png') },
         { id: 'questionLeft', src: isTest ? require('~/assets/question_left.png') : require('~/assets/question_image_left.png') },
         { id: 'questionRight', src: isTest ? require('~/assets/question_right.png') : require('~/assets/question_image_right.png') },
         { id: 'titleBg', src: require('~/assets/title.png') },
@@ -36,6 +37,7 @@ export default function (data) {
         { id: 'rightModel', src: require('~/assets/answer.png') },
         { id: 'rightBtn', src: require('~/assets/right_btn.png') },
         { id: 'resetBtn', src: require('~/assets/reset_btn.png') },
+        { id: 'tipsLine', src: require('~/assets/line.png') },
       ]
 
 
@@ -69,7 +71,7 @@ export default function (data) {
     },
     onComplete (e) {
       this.bg = this.queue.get('bg').content
-      this.answerError = this.queue.get('answerError').content
+      this.errorIcon = this.queue.get('errorIcon').content
       this.questionLeft = this.queue.get('questionLeft').content
       this.questionRight = this.queue.get('questionRight').content
       this.titleBg = this.queue.get('titleBg').content
@@ -80,6 +82,7 @@ export default function (data) {
       this.errorModel = this.queue.get("errorModel").content
       this.rightBtn = this.queue.get("rightBtn").content
       this.resetBtn = this.queue.get("resetBtn").content
+      this.tipsLine = this.queue.get("tipsLine").content
 
 
       if (!isTest) {

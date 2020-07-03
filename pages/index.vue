@@ -10,7 +10,7 @@
   import StageFectory from '~/components/game/stage'
   import ExportScence from '~/components/game/exportScence'
   import SubmitButton from '~/components/game/submitButton'
-  import QuestionsPanel from '~/components/game/questionsPanel'
+  import Panel from '~/components/game/panel'
   import ResultModel from '~/components/game/resultModel'
   import ResetButton from '~/components/game/resetButton'
   export default {
@@ -33,21 +33,21 @@
           // ],
           // title: '连线游戏'
         },
-        answerIds: [],
+        answerQuestionsIds: [],
+        answerRealIds: [],
+        resultIds: [],
         isAllAnswer: false,
         isAllRight: false,
         isSubmit: false,
         questionsPanelCanvas: null,
         questionsResetCanvas: null,
         questionsSubmitCanvas: null,
-        setAlpha: .1
+        setAlpha: 1
       }
     },
     async mounted () {
       // 获取问题
       this.getQuestion()
-
-      // this.initTimeTranslate()
 
       // 预加载图片
       const Assets = AssetsFectory(this.questions)
@@ -58,7 +58,6 @@
       this.gameMain = StageFectory()
       this.stage = this.gameMain.stage
       this.$refs['container'].appendChild(this.stage.canvas)
-
       const oCanvas = document.querySelector('canvas')
 
       const { bg, titleBg } = this.assets
@@ -78,13 +77,13 @@
       // 插入背景
       // this.stage.addChild(exportScence)
 
-      // this.questionsPanelCanvas = this.createPanel()
+      this.questionsPanelCanvas = this.createPanel('panel')
 
       this.questionsResetCanvas = this.createRestButtons()
 
-      // this.questionsSubmitCanvas = this.createSubmitButton()
+      this.questionsSubmitCanvas = this.createSubmitButton()
 
-      this.questionsResetCanvas.visible = true
+      // this.questionsResetCanvas.visible = true
 
       //结束场景
 
@@ -105,15 +104,25 @@
         if (!questions) return this.$router.replace('/config')
 
         this.questions = JSON.parse(questions)
+
+        this.questions.left.forEach((item, index) => {
+
+          this.resultIds[index] = [item.id, this.questions.right.findIndex(i => i.id === item.id)]
+        })
+
         // this.questions.type = 'text'
         // this.questions.right.length = 2
         // this.questions.right[0].text = '1+3+9'
         // this.questions.right[1].text = '33333'
         // this.questions.left[1].text = '1+3+9'
         // this.questions.left[0].text = '1+3+9+1'
+
+
       },
       initBackground () {
+
         const oCanvas = document.querySelector('canvas')
+
         const oContainer = document.querySelector('.container')
 
         const { width: bgWidth, height: bgHeight } = oCanvas.getBoundingClientRect()
@@ -131,18 +140,20 @@
 
         oContainer.insertBefore(oBgWarpper, this.stage.canvas);
       },
-      createPanel () {
-        const { questionLeft, questionRight, errorLine, rightLine, questionsImage } = this.assets
+      createPanel (type = 'panel') {
+        const { questionLeft, questionRight, errorLine, rightLine, questionsImage, errorIcon, tipsLine } = this.assets
         // 插入题目 两个板块之间的距离 300 每个背景板的长度 499 106
-        const panel = new QuestionsPanel({
+        const panel = new Panel({
           x: (1920 - 499 * 2 - 300) / 2,
           y: 320 - (this.questions.left.length * 10),
-          images: { questionLeft, questionRight, errorLine, rightLine, questionsImage },
+          images: { questionLeft, questionRight, errorLine, rightLine, questionsImage, errorIcon, tipsLine },
           questions: this.questions,
           alpha: this.setAlpha,
-          isSubmit: this.isSubmit
+          answerQuestionsIds: this.answerQuestionsIds,
+          answerRealIds: this.answerRealIds,
+          resultIds: this.resultIds,
+          type,
         })
-
         this.stage.addChild(panel)
         return panel
       },
@@ -159,17 +170,25 @@
 
         subBtn.on(Hilo.event.POINTER_START, (e) => {
 
-          this.answerIds = this.questionsPanelCanvas.setAnswerQuestionsId
+          this.answerQuestionsIds = this.questionsPanelCanvas.setAnswerQuestionsId
 
-          if (!this.answerIds.length) return
+          this.answerRealIds = this.questionsPanelCanvas.setAnswer
 
-          this.isSubmit = true
+          if (this.answerQuestionsIds.length !== this.questions.left.length) return
 
-          this.questionsPanelCanvas.isSubmit = true
+          // this.isSubmit = true
 
-          this.isAllAnswer = this.questionsPanelCanvas.setAnswerQuestionsId.length === this.questions.left.length
+          // this.questionsPanelCanvas.isSubmit = true
 
-          this.isAllRight = this.questionsPanelCanvas.setAnswerQuestionsId.every(item => item[0] == item[1])
+          // 移除作答模版
+          this.stage.removeChild(this.questionsPanelCanvas)
+
+          // 创建显示模版
+          this.questionsPanelCanvas = this.createPanel('result')
+
+          this.isAllAnswer = this.answerQuestionsIds.length === this.questions.left.length
+
+          this.isAllRight = this.answerQuestionsIds.every(item => item[0] == item[1])
 
           this.createModel(subBtn)
         })
@@ -216,22 +235,35 @@
           visible: false,
           alpha: this.setAlpha
         })
+
         resetButtons.on(Hilo.event.POINTER_START, (e) => {
 
+          // 移除显示结果panel
           this.stage.removeChild(this.questionsPanelCanvas)
 
-          this.questions.right = this.shuffle(this.questions.right)
+          if (isOnlyReset) return this.resetHandel()
 
-          this.createPanel()
+          e.eventTarget.id ? this.resetHandel() : this.seachHanel()
 
-          this.questionsResetCanvas.visible = false
-          this.questionsSubmitCanvas.visible = true
         })
-
         this.stage.addChild(resetButtons)
 
         return resetButtons
       },
+      resetHandel () {
+        this.questionsResetCanvas.visible = false
+
+        this.questionsSubmitCanvas.visible = true
+
+        this.questions.right = this.shuffle(this.questions.right)
+
+        this.questionsPanelCanvas = this.createPanel('panel')
+
+      },
+      seachHanel () {
+        this.questionsPanelCanvas = this.createPanel('rightResult')
+      },
+
       shuffle (arr) {
         for (var i = arr.length - 1; i >= 0; i--) {
           var randomIndex = Math.floor(Math.random() * (i + 1));
@@ -244,6 +276,3 @@
     }
   }
 </script>
-
-<style>
-</style>

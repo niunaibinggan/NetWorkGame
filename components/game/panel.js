@@ -1,10 +1,8 @@
 import Hilo from 'hilojs'
 import Text from './text'
-export default class QuestionsPanel extends Hilo.Container {
+export default class ResultPanel extends Hilo.Container {
   constructor(properties) {
     super(properties)
-
-    // = this.isAnswerRight
 
     this.isText = (properties.questions.type === 'text')
 
@@ -17,18 +15,28 @@ export default class QuestionsPanel extends Hilo.Container {
     this.distance = baseDistance * (allNumber / questionsLength)
 
     this.initQuestion(properties)
+
+    this.setAnswerQuestionsId = properties.answerQuestionsIds
+
+    this.setAnswer = properties.answerRealIds
+
+    this.resultIds = properties.resultIds
+
+    // properties.type  'panel' |'resutl' | 'rightResult' 三种类型
+    if (properties.type === 'panel') return
+    this.resutlLine(properties)
+
   }
-  // this.selected = [{ realId: 0 }, { realId: 1 }]
   selected = []
   isText = false
   rightX = 800
   distance = null
   setAnswerQuestionsId = []
   setAnswer = []
+  resultIds = []
   rotationDeg = 0
   lineX = null
   lineBase = null
-  isSubmit = false
 
   // Math.atan2(1, 1)*180/Math.PI
 
@@ -37,9 +45,9 @@ export default class QuestionsPanel extends Hilo.Container {
     if (!this.verifyRepeat()) return
 
     const basedistanceLeft = (this.selected[0].realId) * this.distance + 50
-    const basedistanceRigt = (this.selected[1].realId) * this.distance + 50
+    const basedistanceRight = (this.selected[1].realId) * this.distance + 50
     // 设置旋转角度
-    this.rotationDeg = Math.atan2(basedistanceRigt - basedistanceLeft, this.lineBase) * 180 / Math.PI
+    this.rotationDeg = Math.atan2(basedistanceRight - basedistanceLeft, this.lineBase) * 180 / Math.PI
 
     var rotateContainer = new Hilo.Container({
       rotation: this.rotationDeg,
@@ -52,7 +60,7 @@ export default class QuestionsPanel extends Hilo.Container {
     const rectLine = Math.floor(
       Math.sqrt(
         Math.pow(
-          Math.abs(basedistanceRigt - basedistanceLeft), 2) + Math.pow(this.lineBase, 2)))
+          Math.abs(basedistanceRight - basedistanceLeft), 2) + Math.pow(this.lineBase, 2)))
 
     const lineScale = new Hilo.Bitmap({
       x: 0,
@@ -75,6 +83,78 @@ export default class QuestionsPanel extends Hilo.Container {
     this.setAnswer.push([this.selected[0].realId, this.selected[1].realId])
     this.setAnswerQuestionsId.push([this.selected[0].questionId, this.selected[1].questionId])
     this.selected = []
+  }
+
+  resutlLine (properties) {
+    this.resultIds.forEach((item, index) => {
+
+      const isError = properties.answerQuestionsIds[index][0] !== properties.answerQuestionsIds[index][1]
+
+      let images
+
+      let basedistanceLeft
+
+      let basedistanceRight
+
+      if (properties.type === 'result') {
+
+        images = isError ? properties.images.errorLine : properties.images.rightLine
+
+        basedistanceLeft = properties.answerRealIds[index][0] * this.distance + 50
+
+        basedistanceRight = properties.answerRealIds[index][1] * this.distance + 50
+
+      } else {
+        console.log(properties.images.tipsLine)
+
+        images = isError ? properties.images.tipsLine : properties.images.rightLine
+
+        basedistanceLeft = properties.answerQuestionsIds[index][0] * this.distance + 50
+
+        basedistanceRight = properties.answerQuestionsIds[index][1] * this.distance + 50
+      }
+
+      // 设置旋转角度
+      this.rotationDeg = Math.atan2(basedistanceRight - basedistanceLeft, this.lineBase) * 180 / Math.PI
+
+      const rotateContainer = new Hilo.Container({
+        rotation: this.rotationDeg,
+        x: this.lineX,
+        y: basedistanceLeft,
+      }).addTo(this)
+
+      // 设置背景图
+      const rectLine = Math.floor(
+        Math.sqrt(
+          Math.pow(
+            Math.abs(basedistanceRight - basedistanceLeft), 2) + Math.pow(this.lineBase, 2)))
+
+      new Hilo.Bitmap({
+        x: 0,
+        y: 0,
+        image: images,
+        rect: [0, 0, rectLine, 17],
+        visible: true,
+        scaleX: 1,
+        scaleY: 1,
+      }).addTo(rotateContainer)
+
+      if (properties.type !== 'result') return
+
+      // errorIcon
+      new Hilo.Bitmap({
+        x: rectLine / 2 - 34,
+        y: -20,
+        image: properties.images.errorIcon,
+        rect: [0, 0, 68, 68],
+        visible: true,
+        scaleX: 1,
+        scaleY: 1,
+        visible: true,
+        alpha: isError ? 1 : 0
+      }).addTo(rotateContainer)
+
+    })
   }
 
   initQuestion (properties) {
@@ -223,7 +303,7 @@ export default class QuestionsPanel extends Hilo.Container {
           }
         }
       )
-      if (this.isSubmit) return
+      if (properties.type !== 'panel') return
       this.line(properties)
     })
   }
