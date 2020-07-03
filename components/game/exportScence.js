@@ -38,7 +38,7 @@ export default class ExportScence extends Hilo.Container {
       visible: true,
       cc: 3,
       alpha: 1,
-      width: 638,
+      reTextWidth: 638,
       x: (1920 - 638) / 2,
       y: 110,
       color: '#ffffff',

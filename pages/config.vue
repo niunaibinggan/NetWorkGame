@@ -124,6 +124,10 @@
         return this.isText ? 'questions' : 'questionsImage'
       }
     },
+    mounted () {
+      let questions = localStorage.getItem('questionsConfig')
+      if (questions) return this.$router.replace('/')
+    },
     methods: {
       upload (data) {
         this.questionsImage.right[data.current].text = data.content
@@ -160,8 +164,8 @@
           { id: 1, text: 'banana' },
         ]
         this.questionsImage.right = [
-          { id: 0, text: 'http://i.nibaku.com/img_5_1621076003x3346949080_26.jpg' },
-          { id: 1, text: 'http://img4.imgtn.bdimg.com/it/u=2641311620,3928227804&fm=26&gp=0.jpg' }
+          { id: 0, text: require('~/assets/apple.jpg') },
+          { id: 1, text: require('~/assets/banana.jpg') }
         ]
       },
       submitConfig () {
@@ -191,7 +195,8 @@
         let setQuestion = this[this.questionsType]
 
         localStorage.setItem('questionsConfig', JSON.stringify(setQuestion))
-        // this.$router.replace('/')
+
+        this.$router.replace('/')
 
       },
       tipsModel () {

@@ -45,7 +45,13 @@
     },
     async mounted () {
       // 获取问题
-      this.getQuestion()
+      let questions = localStorage.getItem('questionsConfig')
+
+      if (!questions) return this.$router.replace('/config')
+
+      this.questions = JSON.parse(questions)
+
+      this.shuffle(this.questions.right)
 
       // 预加载图片
       const Assets = AssetsFectory(this.questions)
@@ -79,36 +85,8 @@
 
       this.questionsSubmitCanvas = this.createSubmitButton()
 
-      //结束场景
-
     },
     methods: {
-      getQuestion () {
-        // let configData
-        // try {
-        //   // configData = await this.$testload()
-        //   if (typeof configData === 'string') {
-        //     configData = JSON.parse(configData || null)
-        //   }
-        // } catch (error) {
-        //   configData = JSON.parse(localStorage.getItem('configData') || null)
-        // }
-        let questions = localStorage.getItem('questionsConfig')
-
-        if (!questions) return this.$router.replace('/config')
-
-        this.questions = JSON.parse(questions)
-
-        this.shuffle(this.questions.right)
-
-        // this.questions.type = 'text'
-        // this.questions.right.length = 2
-        // this.questions.right[0].text = '1+3+9'
-        // this.questions.right[1].text = '33333'
-        // this.questions.left[1].text = '1+3+9'
-        // this.questions.left[0].text = '1+3+9+1'
-
-      },
       initBackground () {
 
         const oCanvas = document.querySelector('canvas')

@@ -41,11 +41,10 @@ export default class ResultPanel extends Hilo.Container {
   // Math.atan2(1, 1)*180/Math.PI
 
   line (properties) {
-
     if (!this.verifyRepeat()) return
-
     const basedistanceLeft = (this.selected[0].realId) * this.distance + 50
     const basedistanceRight = (this.selected[1].realId) * this.distance + 50
+
     // 设置旋转角度
     this.rotationDeg = Math.atan2(basedistanceRight - basedistanceLeft, this.lineBase) * 180 / Math.PI
 
@@ -163,13 +162,13 @@ export default class ResultPanel extends Hilo.Container {
 
     const rect = this.isText ? [0, 0, 499, 106] : [0, 0, 245, 179]
 
-    const leftX = this.isText ? 0 : 254
+    const leftX = this.isText ? 0 : 265
 
     const baseScale = this.isText ? 1 : 0.8
 
     this.lineX = leftX + rect[2] * baseScale
 
-    this.lineBase = this.isText ? 300 : 350
+    this.lineBase = this.isText ? 300 : 340
 
     let questionsLeftBg = []
     let questionsLeft = []
@@ -191,19 +190,26 @@ export default class ResultPanel extends Hilo.Container {
         id: { realId: index, questionId: item.id },
         text: item.text,
         fontSize: this.isText ? 70 : 35,
-        lineHeight: rect[3] * baseScale,
+        // lineHeight: rect[3] * baseScale,
         bold: true,
         textAlign: 'center',
         visible: true,
         alpha: 1,
-        width: rect[2] * baseScale,
+        reTextWidth: rect[2] * baseScale,
         height: rect[3] * baseScale - (this.isText ? 15 : 50),
         x: leftX,
-        y: index * this.distance + (this.isText ? 15 : 50),
+        y: index * this.distance + (this.isText ? 20 : 50),
         color: this.isText ? '#fff' : '#f7e55d',
       }).addTo(this)
 
-      this.panelClick('left', questionsLeft[index], questionsLeftBg[index], properties, leftX, index * this.distance, baseScale, this.isText ? 1.05 : .9)
+      this.panelClick('left',
+        questionsLeft[index],
+        questionsLeftBg[index],
+        properties,
+        leftX,
+        index * this.distance,
+        baseScale, this.isText ? 1.05 : .9,
+        rect)
     })
 
     properties.questions.right.forEach((item, index) => {
@@ -225,45 +231,37 @@ export default class ResultPanel extends Hilo.Container {
           lineHeight: rect[3] * baseScale,
           bold: true,
           textAlign: 'center',
-          width: rect[2] * baseScale,
+          reTextWidth: rect[2] * baseScale,
           height: rect[3] * baseScale - 15,
           visible: true,
           alpha: 1,
           x: this.rightX,
-          y: index * this.distance + 15,
+          y: index * this.distance + 20,
           color: '#ffffff',
         }).addTo(this)
       } else {
-        const imageScaleBaese = 0.2
+        const imageScaleBaese = 0.15
         const imageScale = baseScale - imageScaleBaese
         const imageX = imageScaleBaese * rect[2]
         const imageY = imageScaleBaese * rect[3]
-        questionsRight[index] = new Hilo.Bitmap({
+
+        questionsRight[index] = new Hilo.Graphics({
           id: { realId: index, questionId: item.id },
           x: this.rightX + imageX / 2,
           y: index * this.distance + imageY / 2,
-          width: rect[2],
-          height: rect[3],
+          width: rect[2] + 50,
+          height: rect[3] + 10,
           visible: true,
-          scaleX: imageScale,
-          scaleY: imageScale,
-          image: properties.images.questionsImage[index],
+          scaleX: 1.08,
+          scaleY: 1.08,
         }).addTo(this)
-        // questionsRight[index] = new Hilo.Graphics({
-        //   x: this.rightX + imageX / 2,
-        //   y: index * this.distance + imageY / 2,
-        //   width: rect[2],
-        //   height: rect[3],
-        //   visible: true,
-        //   scaleX: imageScale,
-        //   scaleY: imageScale,
-        // })
-        // const img = new Image()
-        // img.src = item.text
-        // img.onload = () => {
-        //   img.onload = null
-        //   questionsRight[index].beginBitmapFill(img, 'no-repeat').drawRoundRect(0, 0, rect[2] * imageScale, rect[3] * imageScale, 5).endFill().addTo(this)
-        // }
+
+        const img = new Image()
+        img.src = item.text
+        img.onload = () => {
+          img.onload = null
+          questionsRight[index].beginBitmapFill(img, 'no-repeat').drawRoundRect(0, 0, rect[2] * imageScale - 10, rect[3] * imageScale - 10, 20).endFill()
+        }
       }
 
       this.panelClick('right',
@@ -273,23 +271,26 @@ export default class ResultPanel extends Hilo.Container {
         this.rightX,
         index * this.distance,
         baseScale,
-        this.isText ? 1.05 : .9)
+        this.isText ? 1.05 : .9,
+        rect)
     })
     // 正则表达式 RegExp(/left/).test(str)
   }
 
   panelClick (type, eventTarget, target,
     properties, initX, initY, baseScale,
-    targetScale) {
+    targetScale, rect) {
     eventTarget.on(Hilo.event.POINTER_START, (e) => {
+      console.log(e)
       if (type === 'right' && !this.selected.length) this.selected[0] = null
       this.selected[type === 'left' ? 0 : 1] = e.eventTarget.id
+
       Hilo.Tween.to(
         target,
         {
           scaleX: targetScale, scaleY: targetScale,
-          x: initX - (499 * 0.05) / 2,
-          y: initY - (106 * 0.05) / 2
+          x: initX - (rect[2] * baseScale * 0.05) / 2 - (this.isText ? 0 : 2),
+          y: initY - (rect[3] * baseScale * 0.05) / 2 - (this.isText ? 0 : 2)
         },
         {
           duration: 100,
