@@ -112,8 +112,10 @@
         const { questionLeft, questionRight, errorLine, rightLine, questionsImage, errorIcon, tipsLine } = this.assets
         // 插入题目 两个板块之间的距离 300 每个背景板的长度 499 106
         const panel = new Panel({
-          x: (1920 - 499 * 2 - 300) / 2,
-          y: 320 - (this.questions.left.length * 10),
+          // x: (1920 - 499 * 2 - 300) / 2,
+          // y: 320 - (this.questions.left.length * 10),
+          x: 0,
+          y: 0,
           images: { questionLeft, questionRight, errorLine, rightLine, questionsImage, errorIcon, tipsLine },
           questions: this.questions,
           alpha: this.setAlpha,
@@ -121,6 +123,7 @@
           answerRealIds: this.answerRealIds,
           resultIds: this.resultIds,
           type,
+          stage: this.stage
         })
         this.stage.addChild(panel)
         return panel

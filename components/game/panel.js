@@ -4,17 +4,19 @@ export default class ResultPanel extends Hilo.Container {
   constructor(properties) {
     super(properties)
 
+    this.stage = properties.stage
+
     this.creatContainer()
 
     this.isText = (properties.questions.type === 'text')
 
-    const questionsLength = properties.questions.left.length
+    this.questionsLength = properties.questions.left.length
 
     const allNumber = this.isText ? 5 : 4
 
     const baseDistance = this.isText ? 130 : 170
 
-    this.distance = baseDistance * (allNumber / questionsLength)
+    this.distance = baseDistance * (allNumber / this.questionsLength)
 
     this.initQuestion(properties)
 
@@ -43,34 +45,45 @@ export default class ResultPanel extends Hilo.Container {
   lineBase = null
   errorIcon = null
   repeatAnswerIndex = []
-
+  readyLine = {
+    isStart: false
+  }
+  stage = null
   temporaryQuestionsContainer = null
   temporaryLinesContainer = null
-  temporatySelected = null
+  temporarySelected = null
+  temporaryLinesMove = null
+
+  questionsLength = 0
 
   // Math.atan2(1, 1)*180/Math.PI
   creatContainer () {
     this.temporaryLinesContainer = new Hilo.Container({
-      x: 0,
-      y: 0,
+      x: (1920 - 499 * 2 - 300) / 2,
+      y: 320 - (this.questionsLength * 10),
     }).addTo(this)
 
     this.temporaryQuestionsContainer = new Hilo.Container({
+      x: (1920 - 499 * 2 - 300) / 2,
+      y: 320 - (this.questionsLength * 10),
+    }).addTo(this)
+
+    this.temporarySelected = new Hilo.Container({
+      x: (1920 - 499 * 2 - 300) / 2,
+      y: 320 - (this.questionsLength * 10),
+    }).addTo(this)
+    this.temporaryLinesMove = new Hilo.Container({
       x: 0,
       y: 0,
     }).addTo(this)
 
-    this.temporatySelected = new Hilo.Container({
-      x: 0,
-      y: 0,
-    }).addTo(this)
   }
   commonLine (left, right, image, isTween, type = 'panel', isError = false) {
     // 设置旋转角度
     this.rotationDeg = Math.atan2(right - left, this.lineBase) * 180 / Math.PI
 
     const rotateContainer = new Hilo.Container({
-      id: this.selected[0].realId,
+      id: this.selected[0] && this.selected[0].realId,
       rotation: this.rotationDeg,
       x: this.lineX - 5,
       y: this.isText ? left : left + 10,
@@ -120,12 +133,14 @@ export default class ResultPanel extends Hilo.Container {
 
   line (properties) {
     if (!this.verifyRepeat()) return
+    this.temporaryLinesMove.removeAllChildren()
     if (this.repeatAnswerIndex.length) {
       this.repeatAnswerIndex.forEach((item, index) => {
 
         this.temporaryLinesContainer.removeChildById(this.setAnswer[item - index][0])
 
         this.setAnswer.splice(item - index, 1)
+        this.setAnswerQuestionsId.splice(item - index, 1)
       })
     }
 
@@ -140,6 +155,7 @@ export default class ResultPanel extends Hilo.Container {
     this.setAnswer.push([this.selected[0].realId, this.selected[1].realId])
     this.setAnswerQuestionsId.push([this.selected[0].questionId, this.selected[1].questionId])
     this.selected = []
+    this.readyLine.isStart = false
   }
 
   resutlLine (properties) {
@@ -292,24 +308,48 @@ export default class ResultPanel extends Hilo.Container {
         this.isText ? 1.05 : .9,
         rect)
     })
-    // 正则表达式 RegExp(/left/).test(str)
+
+
+    this.stage.on(Hilo.event.POINTER_MOVE, (e) => {
+      if (!this.readyLine.isStart) return
+      // 正则表达式 RegExp(/left/).test(str)
+      if (this.temporaryLinesMove.getNumChildren() > 0) {
+        this.temporaryLinesMove.removeChildAt(0)
+      }
+      let line = new Hilo.Graphics({
+        x: 0,
+        y: 0,
+        visible: true,
+      }).addTo(this.temporaryLinesMove)
+      line.beginPath()
+        .moveTo(e.stageX, e.stageY)
+        .lineStyle(8, '#a7e049')
+        .lineTo(this.readyLine.x, this.readyLine.y)
+        .endFill()
+        .addTo(this.temporaryLinesMove)
+    })
   }
 
   panelClick (type, eventTarget, target,
     properties, initX, initY, baseScale,
     targetScale, rect) {
     eventTarget.on(Hilo.event.POINTER_START, (e) => {
+      this.readyLine = {
+        isStart: true,
+        x: e.stageX,
+        y: e.stageY
+      }
       if (type === 'right' && !this.selected.length) this.selected[0] = null
       this.selected[type === 'left' ? 0 : 1] = e.eventTarget.id
 
-      if (this.temporatySelected.getNumChildren() > 0) {
-        this.temporatySelected.removeChildAt(0)
+      if (this.temporarySelected.getNumChildren() > 0) {
+        this.temporarySelected.removeChildAt(0)
       }
       let selectedCanvas = new Hilo.Graphics({
         x: initX,
         y: initY,
         visible: false
-      }).addTo(this.temporatySelected)
+      }).addTo(this.temporarySelected)
 
       selectedCanvas.lineStyle(4, "#ff2a2a").drawRoundRect(0, 0, rect[2], rect[3], 20).endFill()
 
@@ -323,7 +363,7 @@ export default class ResultPanel extends Hilo.Container {
         {
           duration: 100,
           onComplete () {
-            // this.temporatySelected.removeChild()
+            // this.temporarySelected.removeChild()
             Hilo.Tween.to(
               target,
               { scaleX: baseScale, scaleY: baseScale, x: initX, y: initY },
@@ -347,10 +387,6 @@ export default class ResultPanel extends Hilo.Container {
     if (!(this.selected.length === 2
       && this.selected.every(item => item))) return false
 
-    // 验证是否有重复
-    // const isRepeat = this.setAnswer.filter(item =>
-    //   (item[0] === this.selected[0].realId) || (item[1] === this.selected[1].realId)
-    // )
     this.setAnswer.forEach((item, index) => {
       if ((item[0] === this.selected[0].realId) || (item[1] === this.selected[1].realId)) {
         this.repeatAnswerIndex.push(index)
