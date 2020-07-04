@@ -44,8 +44,13 @@
       }
     },
     async mounted () {
+      let questions
       // 获取问题
-      let questions = localStorage.getItem('questionsConfig')
+      try {
+        questions = await this.$testload()
+      } catch (error) {
+        questions = localStorage.getItem('questionsConfig')
+      }
 
       if (!questions) return this.$router.replace('/config')
 

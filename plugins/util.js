@@ -1,10 +1,10 @@
 import Vue from 'vue'
 
-Vue.prototype.$testsave = async function(thumbnail, rawdata) {
+Vue.prototype.$testsave = async function (thumbnail, rawdata) {
   return new Promise((re, rj) => {
     var httpReq
     httpReq = new XMLHttpRequest()
-    httpReq.onreadystatechange = function() {
+    httpReq.onreadystatechange = function () {
       if (httpReq.readyState === 4) {
         if (httpReq.status === 200) {
           console.log('send finished')
@@ -26,11 +26,11 @@ Vue.prototype.$testsave = async function(thumbnail, rawdata) {
     httpReq.send(content)
   })
 }
-Vue.prototype.$testload = async function() {
+Vue.prototype.$testload = async function () {
   return new Promise((re, rj) => {
     var httpReq
     httpReq = new XMLHttpRequest()
-    httpReq.onreadystatechange = function() {
+    httpReq.onreadystatechange = function () {
       if (httpReq.readyState === 4) {
         if (httpReq.status === 200) {
           re(httpReq.responseText)

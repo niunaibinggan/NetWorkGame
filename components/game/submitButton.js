@@ -2,7 +2,6 @@ import Hilo from 'hilojs'
 export default class SubmitButton extends Hilo.Container {
   constructor(properties) {
     super(properties)
-    // console.log(properties)
     this.submit(properties)
   }
   submit (properties) {

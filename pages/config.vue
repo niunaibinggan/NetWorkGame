@@ -134,11 +134,6 @@
         uploadImage: ''
       }
     },
-    watch: {
-      "questions.time": function (val) {
-        // console.log(typeof val)
-      }
-    },
     computed: {
       questionsType () {
         return this.isText ? 'questions' : 'questionsImage'
@@ -184,7 +179,7 @@
           { id: 1, text: require('~/assets/banana.jpg') }
         ]
       },
-      submitConfig () {
+      async submitConfig () {
         const leftVerify = this[this.questionsType].left.every(item => item.text)
         if (!leftVerify) {
           this.tips = `题目不能为空！`
@@ -210,7 +205,11 @@
 
         let setQuestion = this[this.questionsType]
 
-        localStorage.setItem('questionsConfig', JSON.stringify(setQuestion))
+        try {
+          await this.$testsave(null, JSON.stringify(setQuestion))
+        } catch (error) {
+          localStorage.setItem('questionsConfig', JSON.stringify(setQuestion))
+        }
 
         this.$router.replace('/')
 

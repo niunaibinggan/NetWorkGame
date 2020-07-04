@@ -60,17 +60,17 @@ export default class ResultPanel extends Hilo.Container {
   creatContainer () {
     this.temporaryLinesContainer = new Hilo.Container({
       x: (1920 - 499 * 2 - 300) / 2,
-      y: 320 - (this.questionsLength * 10),
+      y: this.isText ? 320 - (this.questionsLength * 10) : 280 - (this.questionsLength * 10),
     }).addTo(this)
 
     this.temporaryQuestionsContainer = new Hilo.Container({
       x: (1920 - 499 * 2 - 300) / 2,
-      y: 320 - (this.questionsLength * 10),
+      y: this.isText ? 320 - (this.questionsLength * 10) : 280 - (this.questionsLength * 10),
     }).addTo(this)
 
     this.temporarySelected = new Hilo.Container({
       x: (1920 - 499 * 2 - 300) / 2,
-      y: 320 - (this.questionsLength * 10),
+      y: this.isText ? 320 - (this.questionsLength * 10) : 280 - (this.questionsLength * 10),
     }).addTo(this)
     this.temporaryLinesMove = new Hilo.Container({
       x: 0,
@@ -275,26 +275,36 @@ export default class ResultPanel extends Hilo.Container {
         }).addTo(this.temporaryQuestionsContainer)
       } else {
         const imageScaleBaese = 0.15
-        const imageScale = baseScale - imageScaleBaese
-        const imageX = imageScaleBaese * rect[2]
-        const imageY = imageScaleBaese * rect[3]
-
-        questionsRight[index] = new Hilo.Graphics({
+        // const imageScale = baseScale - imageScaleBaese
+        const imageX = Math.round(imageScaleBaese * rect[2])
+        const imageY = Math.round(imageScaleBaese * rect[3])
+        questionsRight[index] = new Hilo.Container({
           id: { realId: index, questionId: item.id },
           x: this.rightX + imageX / 2,
           y: index * this.distance + imageY / 2,
-          width: rect[2] + 50,
-          height: rect[3] + 10,
+          width: rect[2],
+          height: rect[3],
           visible: true,
-          scaleX: 1.08,
-          scaleY: 1.08,
+          scaleX: 1,
+          scaleY: 1,
         }).addTo(this.temporaryQuestionsContainer)
 
+        // 渲染图片
         const img = new Image()
         img.src = item.text
-        img.onload = () => {
-          img.onload = null
-          questionsRight[index].beginBitmapFill(img, 'no-repeat').drawRoundRect(0, 0, rect[2] * imageScale - 10, rect[3] * imageScale - 10, 20).endFill().addTo(this)
+        img.onload = (e) => {
+          const realImageWidth = e.path[0].width
+          const realImageHeight = e.path[0].height
+          const scale = realImageWidth > realImageHeight ? (rect[2] - 40) * baseScale / realImageWidth : (rect[3] - 35) * baseScale / realImageHeight
+          new Hilo.Bitmap({
+            id: { realId: index, questionId: item.id },
+            x: realImageWidth > realImageHeight ? 0 : (rect[2] - 80 - realImageWidth * scale) / 2,
+            y: realImageWidth > realImageHeight ? (rect[3] - 60 - realImageHeight * scale) / 2 : 0,
+            width: realImageWidth * scale,
+            height: realImageHeight * scale,
+            image: item.text,
+            visible: true,
+          }).addTo(questionsRight[index])
         }
       }
 
@@ -308,7 +318,6 @@ export default class ResultPanel extends Hilo.Container {
         this.isText ? 1.05 : .9,
         rect)
     })
-
 
     this.stage.on(Hilo.event.POINTER_MOVE, (e) => {
       if (!this.readyLine.isStart) return
@@ -351,7 +360,7 @@ export default class ResultPanel extends Hilo.Container {
         visible: false
       }).addTo(this.temporarySelected)
 
-      selectedCanvas.lineStyle(4, "#ff2a2a").drawRoundRect(0, 0, rect[2], rect[3], 20).endFill()
+      selectedCanvas.lineStyle(4, "#ff2a2a").drawRoundRect(0, 0, rect[2] * baseScale, rect[3] * baseScale, 20).endFill()
 
       Hilo.Tween.to(
         target,

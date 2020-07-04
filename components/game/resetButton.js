@@ -5,8 +5,6 @@ export default class ResetButton extends Hilo.Container {
     this.resetButton(properties)
   }
   resetButton (properties) {
-    // console.log(properties.images)
-
     const buttonName = []
 
     properties.images.forEach((item, index) => {
