@@ -198,7 +198,7 @@ export default class ResultPanel extends Hilo.Container {
         height: rect[3] * baseScale - (this.isText ? 15 : 50),
         x: leftX,
         y: index * this.distance + (this.isText ? 20 : 55),
-        color: this.isText ? '#fff' : '#fad35f',
+        color: this.isText ? '#fff' : '#d6b355',
       }).addTo(this.temporaryQuestionsContainer)
 
       this.panelClick('left',

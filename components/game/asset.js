@@ -3,7 +3,6 @@ import Hilo from 'hilojs'
 export default function (data) {
 
   const isTest = (data.type === 'text')
-  const questionsImageId = "questionsImage"
 
   return Hilo.Class.create({
     Mixes: Hilo.EventMixin,
@@ -39,12 +38,6 @@ export default function (data) {
         { id: 'resetBtn', src: require('~/assets/reset_btn.png') },
         { id: 'tipsLine', src: require('~/assets/line.png') },
       ]
-
-      // if (!isTest) {
-      //   data.right.forEach((item, index) => {
-      //     resources.push({ id: questionsImageId + index, src: item.text })
-      //   })
-      // }
       this.queue = new Hilo.LoadQueue()
       this.queue.add(resources)
       this.queue.on('load', this.onProcess.bind(this))
@@ -81,13 +74,6 @@ export default function (data) {
       this.resetBtn = this.queue.get("resetBtn").content
       this.tipsLine = this.queue.get("tipsLine").content
 
-
-      // if (!isTest) {
-      //   data.right.forEach((item, index) => {
-      //     this.questionsImage.push(this.queue.get(`${questionsImageId}${index}`).content)
-      //   })
-      // }
-      // console.log(this.queue.get("questionsImage02").content)
       this.queue.off('complete')
       this.fire('complete')
     },

@@ -1,41 +1,39 @@
 <template>
   <div class="root">
-    <h1 class="root__title">题目：{{questions.left.length}}/{{target}}
-      <span class="root__tips">(每题有唯一的答案)</span></h1>
-
-    <h3 class="root__title-set">设置标题：
+    <h3 class="root__title-set">
       <input type="text"
-             v-model="questions.title">
+             v-if="isText"
+             v-model="questions.title"
+             placeholder="请输入标题">
+      <input v-else
+             type="text"
+             v-model="questionsImage.title"
+             placeholder="请输入标题">
     </h3>
-
-    <div class="root__bottom">
-      <span class="root__add"
-            @click="addQuestion">添加</span>
-      <span class="root__submit"
-            @click="submitConfig">提交</span>
-      <span class="root__default"
-            @click="defalutConfig">默认配置</span>
-
-    </div>
 
     <ul class="root__question"
         v-if="isText">
       <li v-for="(item, index) in questions.left"
           :key="item.id"
           class="root__question-item">
-        <span class="root__question-left root__question-common">
-          <input type="text"
-                 v-model="item.text">
-        </span>
-        <span class="root__question-line"></span>
-        <span class="root__delete"
-              :class="{'root__delete-none': questions.left.length ===2}"
-              @click="deleteQuestion(index)">删除</span>
+        <p>
+          <span class="root__question-left root__question-common">
+            <input type="text"
+                   placeholder="请输入拖动元素名称"
+                   v-model="item.text">
+          </span>
+          <span class="root__question-line"></span>
 
-        <span class="root__question-right root__question-common">
-          <input type="text"
-                 v-model="questions.right[index].text">
-        </span>
+          <span class="root__question-right root__question-common">
+            <input type="text"
+                   placeholder="请输入目标元素名称"
+                   v-model="questions.right[index].text">
+          </span>
+
+          <span class="root__delete"
+                :class="{'root__delete-none': questions.left.length ===2}"
+                @click="deleteQuestion(index)">x</span>
+        </p>
       </li>
     </ul>
 
@@ -43,33 +41,55 @@
         v-else>
       <li v-for="(item, index) in questionsImage.left"
           :key="item.id"
-          class="root__question-item">
-        <span class="root__question-left root__question-common"
-              style="margin-top:60px">
-          <input type="text"
-                 v-model="item.text">
-        </span>
-        <span class="root__question-line"
-              style="margin-top:80px; width: 25%"></span>
-        <span class="root__delete"
-              :class="{'root__delete-none': questionsImage.left.length ===2}"
-              @click="deleteQuestion(index)">删除</span>
+          class="root__question-item root__image-item">
+        <p>
+          <span class="root__image-left">
+            <input type="text"
+                   placeholder="请输入文字"
+                   v-model="item.text">
+          </span>
+          <span class="root__image-line"></span>
+          <span class="root__upload">
+            <Upload @upload="upload"
+                    class="root__upload-set"
+                    :current="index"></Upload>
 
-        <div class="root__upload">
-          <Upload @upload="upload"
-                  class="root__upload-set"
-                  :current="index"></Upload>
-          <img v-if="questionsImage.right[index].text"
-               class="root__upload-image"
-               :src="questionsImage.right[index].text" />
-        </div>
+            <el-image v-if="questionsImage.right[index].text"
+                      class="root__upload-image"
+                      :src="questionsImage.right[index].text"
+                      fit="contain"></el-image>
+          </span>
+          <span class="root__upload-tips"
+                v-if="!questionsImage.right[index].text">+请上传图片</span>
 
+          <span class="root__delete"
+                style="top: 55px;"
+                :class="{'root__delete-none': questionsImage.left.length ===2}"
+                @click="deleteQuestion(index)">x</span>
+        </p>
       </li>
     </ul>
 
-    <p class="root__toggle">
-      <span @click="toggle">{{isText? '文 - 文': '文 - 图'}}</span>
-    </p>
+    <div class="root__bottom">
+      <div class="root__bottom-contnet">
+        <div class="root__toggle">
+          <span @click="toggle"
+                :class="{'root__toggle-active': isText}">文-文</span>
+          <span @click="toggle"
+                :class="{'root__toggle-active': !isText}">文-图</span>
+        </div>
+
+        <span class="root__add"
+              @click="addQuestion">
+          +添加连线({{isText ? questions.left.length :questionsImage.left.length}}/{{target}})
+        </span>
+
+        <span class="root__submit"
+              @click="submitConfig">完成</span>
+        <span class="root__default"
+              @click="defalutConfig">导入范例</span>
+      </div>
+    </div>
 
     <div class="root__model"
          v-if="visible">
@@ -94,7 +114,7 @@
             { id: 0, text: '' },
             { id: 1, text: '' },
           ],
-          title: '连线游戏'
+          title: ''
         },
         questionsImage: {
           left: [
@@ -105,7 +125,7 @@
             { id: 0, text: '' },
             { id: 1, text: '' },
           ],
-          title: '连线游戏'
+          title: ''
         },
         tips: '',
         visible: false,
@@ -123,10 +143,6 @@
       questionsType () {
         return this.isText ? 'questions' : 'questionsImage'
       }
-    },
-    mounted () {
-      let questions = localStorage.getItem('questionsConfig')
-      if (questions) return this.$router.replace('/')
     },
     methods: {
       upload (data) {
@@ -213,38 +229,59 @@
 </script>
 <style scoped>
   .root {
-    /* padding: 0 20%; */
-    max-width: 720px;
+    min-width: 600px;
     margin: 0 auto;
-  }
-  .root__title {
-    margin: 3% 0;
-    padding-top: 10% 0;
-  }
-  .root__tips {
-    margin-left: 20px;
-    font-size: 14px;
-    color: #ccc;
   }
   .root__question {
     margin: 0 auto;
     width: 100%;
-    min-width: 720px;
+    min-width: 600px;
+    min-height: 400px;
+    overflow: scroll;
   }
   .root__question-item {
     width: 100%;
-    min-height: 80px;
     overflow: hidden;
-    min-width: 200px;
+    padding-top: 15px;
+    height: 70px;
+    cursor: pointer;
+  }
+  .root__image-item {
+    height: 130px;
+    margin-top: 8px;
+    padding: 0;
+  }
+  .root__question-item:hover {
+    background: rgba(217, 223, 255, 0.3);
+  }
+  .root__question-item p {
+    padding: 0 35px;
+    width: 100%;
+    min-width: 600px;
+    max-width: 1000px;
+    overflow: hidden;
+    margin: 0 auto;
     position: relative;
+  }
+
+  .root__image-item p {
+    width: 100%;
     overflow: hidden;
+    margin: 0 auto;
+    position: relative;
+    min-width: 300px;
+    max-width: 650px;
+  }
+
+  .root__question-time-active {
+    background: rgba(217, 223, 255, 0.3);
   }
   .root__question-common {
     width: 40%;
     height: 40px;
     font-size: 12px;
     line-height: 40px;
-    border: 1px solid #efefef;
+    border: 1px solid #cccccc;
     border-radius: 4px;
     padding-left: 10px;
   }
@@ -255,79 +292,100 @@
     padding-left: 10px;
     width: 70%;
     padding-bottom: 5px;
+    background: none;
+    cursor: pointer;
   }
   .root__question-line {
-    width: 8%;
+    width: 20%;
     float: left;
-    margin-left: 1%;
-    margin-right: 1%;
     height: 1px;
     background: #585858;
     margin-top: 20px;
+  }
+  .root__image-line {
+    width: calc(100% - 268px);
+    float: left;
+    height: 1px;
+    background: #585858;
+    margin-top: 65px;
   }
   .root__question-left {
     float: left;
   }
   .root__question-right {
     float: right;
-    margin-right: 10%;
   }
   .root__delete {
-    padding: 0 20px;
-    height: 30px;
-    line-height: 30px;
-    background: #e63939;
-    font-size: 12px;
-    border-radius: 4px;
-    color: #fff;
+    width: 22px;
+    height: 23px;
+    line-height: 20px;
+    text-align: center;
+    border-radius: 50%;
+    color: #ccc;
     cursor: pointer;
+    border: 1px solid #ccc;
     position: absolute;
-    right: 0;
-    top: 5px;
+    left: 0;
+    top: 8px;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .root__delete:hover {
+    background: rgba(173, 173, 173, 0.3);
+    color: #fff;
   }
   .root__delete-none {
     display: none;
   }
 
   .root__bottom {
-    margin-bottom: 5%;
+    position: fixed;
     width: 100%;
     height: 40px;
-    min-width: 720px;
+    min-width: 450px;
+    bottom: 5%;
+    left: 0;
+    text-align: center;
+  }
+
+  .root__bottom-contnet {
+    max-width: 1000px;
+    margin: 0 auto;
   }
 
   .root__add {
     display: inline-block;
-    padding: 0 20px;
-    height: 30px;
-    line-height: 30px;
-    background: #3496ff;
+    padding: 8px 20px;
+    background: #ffb647;
     font-size: 12px;
-    border-radius: 4px;
+    border-radius: 130px;
     color: #fff;
     cursor: pointer;
+  }
+
+  .root__add:hover {
+    background: #ffa721;
   }
 
   .root__title-set {
     font-size: 16px;
     color: #5f5c5c;
-    margin: 5% 0 3%;
+    margin: 3% 0 2%;
+    text-align: center;
+    width: 100%;
   }
   .root__title-set input {
     border: none;
-    border-bottom: 1px solid #000;
+    border: 1px solid #cccccc;
     font-size: 14px;
     margin-left: 5px;
-    padding-left: 10px;
-    padding-bottom: 5px;
-    width: 40%;
+    padding: 10px 10px;
+    width: 20%;
   }
 
   .root__default {
     float: right;
-    padding: 0 20px;
-    height: 30px;
-    line-height: 30px;
+    padding: 8px 20px;
     background: #7e827f;
     font-size: 12px;
     border-radius: 4px;
@@ -338,9 +396,7 @@
 
   .root__submit {
     float: right;
-    padding: 0 20px;
-    height: 30px;
-    line-height: 30px;
+    padding: 8px 20px;
     background: #39e698;
     font-size: 12px;
     border-radius: 4px;
@@ -359,40 +415,79 @@
   }
 
   .root__toggle {
-    margin-top: 30px;
-    text-align: center;
-    min-width: 720px;
+    float: left;
+    border-radius: 130px;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    position: relative;
+  }
+  .root__toggle::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 1px;
+    height: 40px;
+    background: #ccc;
+    top: 0;
   }
   .root__toggle span {
-    display: inline-block;
-    padding: 0 20px;
-    height: 30px;
-    line-height: 30px;
-    background: #3496ff;
+    padding: 3px;
+    float: left;
+    padding: 7px 13px;
     font-size: 12px;
-    border-radius: 4px;
-    color: #fff;
     cursor: pointer;
-    margin-left: -10%;
+  }
+  .root__toggle-active {
+    background: #3496ff;
+    color: #fff;
+  }
+  .root__toggle-active:hover {
+    background: #1f89fb;
+    color: #fff;
   }
   .root__upload {
-    width: 150px;
-    height: 150px;
-    border: 1px dashed #ccc;
-    float: left;
+    width: 130px;
+    height: 130px;
+    border: 1px solid #ccc;
+    float: right;
     margin-bottom: 20px;
     position: relative;
     overflow: hidden;
+    border-radius: 4px;
   }
   .root__upload-set {
-    width: 150px;
-    height: 150px;
+    width: 130px;
+    height: 130px;
   }
   .root__upload-image {
-    width: 148px;
-    height: 148px;
+    width: 128px;
+    height: 128px;
     position: absolute;
     left: 0;
     top: 0;
+  }
+
+  .root__upload-tips {
+    position: absolute;
+    top: 55px;
+    font-size: 14px;
+    color: #787878;
+    right: 70px;
+  }
+
+  .root__image-left {
+    float: left;
+    height: 130px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  .root__image-left input {
+    border: none;
+    font-size: 14px;
+    margin-left: 5px;
+    padding: 0 10px;
+    width: 130px;
+    background: none;
+    line-height: 130px;
   }
 </style>

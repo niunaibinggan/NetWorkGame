@@ -174,13 +174,12 @@
         // 插入结果 model
         this.stage.addChild(resultModel)
 
-        resultModel.on(Hilo.event.POINTER_START, (e) => {
+        setTimeout(() => {
           this.questionsResetCanvas = this.createRestButtons()
           this.questionsSubmitCanvas.visible = false
           this.stage.removeChild(resultModel)
           this.questionsResetCanvas.visible = true
-        })
-
+        }, 3000)
         return resultModel
       },
       createRestButtons () {
