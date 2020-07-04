@@ -42,6 +42,7 @@ export default class ResultPanel extends Hilo.Container {
   lineX = null
   lineBase = null
   errorIcon = null
+  repeatAnswerIndex = []
 
   temporaryQuestionsContainer = null
   temporaryLinesContainer = null
@@ -69,6 +70,7 @@ export default class ResultPanel extends Hilo.Container {
     this.rotationDeg = Math.atan2(right - left, this.lineBase) * 180 / Math.PI
 
     const rotateContainer = new Hilo.Container({
+      id: this.selected[0].realId,
       rotation: this.rotationDeg,
       x: this.lineX - 5,
       y: this.isText ? left : left + 10,
@@ -118,6 +120,17 @@ export default class ResultPanel extends Hilo.Container {
 
   line (properties) {
     if (!this.verifyRepeat()) return
+    if (this.repeatAnswerIndex.length) {
+      this.repeatAnswerIndex.forEach((item, index) => {
+
+        this.temporaryLinesContainer.removeChildById(this.setAnswer[item - index][0])
+
+        this.setAnswer.splice(item - index, 1)
+      })
+    }
+
+    this.repeatAnswerIndex = []
+
     const basedistanceLeft = (this.selected[0].realId) * this.distance + 50
     const basedistanceRight = (this.selected[1].realId) * this.distance + 50
 
@@ -335,10 +348,14 @@ export default class ResultPanel extends Hilo.Container {
       && this.selected.every(item => item))) return false
 
     // 验证是否有重复
-    const isRepeat = this.setAnswer.filter(item =>
-      (item[0] === this.selected[0].realId) || (item[1] === this.selected[1].realId)
-    )
-    if (isRepeat.length) return false
+    // const isRepeat = this.setAnswer.filter(item =>
+    //   (item[0] === this.selected[0].realId) || (item[1] === this.selected[1].realId)
+    // )
+    this.setAnswer.forEach((item, index) => {
+      if ((item[0] === this.selected[0].realId) || (item[1] === this.selected[1].realId)) {
+        this.repeatAnswerIndex.push(index)
+      }
+    })
 
     return true
   }
