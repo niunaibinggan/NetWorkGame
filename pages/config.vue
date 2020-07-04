@@ -130,7 +130,7 @@
         tips: '',
         visible: false,
         target: 5,
-        isText: false,
+        isText: true,
         uploadImage: ''
       }
     },
@@ -223,6 +223,7 @@
       },
       toggle () {
         this.isText = !this.isText
+        this.target = this.isText ? 5 : 4
       },
     }
   }
@@ -420,6 +421,7 @@
     overflow: hidden;
     border: 1px solid #ccc;
     position: relative;
+    color: #868786;
   }
   .root__toggle::after {
     content: "";

@@ -6,7 +6,6 @@ export default class ResultPanel extends Hilo.Container {
 
     this.creatContainer()
 
-
     this.isText = (properties.questions.type === 'text')
 
     const questionsLength = properties.questions.left.length
@@ -46,6 +45,7 @@ export default class ResultPanel extends Hilo.Container {
 
   temporaryQuestionsContainer = null
   temporaryLinesContainer = null
+  temporatySelected = null
 
   // Math.atan2(1, 1)*180/Math.PI
   creatContainer () {
@@ -53,7 +53,13 @@ export default class ResultPanel extends Hilo.Container {
       x: 0,
       y: 0,
     }).addTo(this)
+
     this.temporaryQuestionsContainer = new Hilo.Container({
+      x: 0,
+      y: 0,
+    }).addTo(this)
+
+    this.temporatySelected = new Hilo.Container({
       x: 0,
       y: 0,
     }).addTo(this)
@@ -283,6 +289,17 @@ export default class ResultPanel extends Hilo.Container {
       if (type === 'right' && !this.selected.length) this.selected[0] = null
       this.selected[type === 'left' ? 0 : 1] = e.eventTarget.id
 
+      if (this.temporatySelected.getNumChildren() > 0) {
+        this.temporatySelected.removeChildAt(0)
+      }
+      let selectedCanvas = new Hilo.Graphics({
+        x: initX,
+        y: initY,
+        visible: false
+      }).addTo(this.temporatySelected)
+
+      selectedCanvas.lineStyle(4, "#ff2a2a").drawRoundRect(0, 0, rect[2], rect[3], 20).endFill()
+
       Hilo.Tween.to(
         target,
         {
@@ -293,11 +310,15 @@ export default class ResultPanel extends Hilo.Container {
         {
           duration: 100,
           onComplete () {
+            // this.temporatySelected.removeChild()
             Hilo.Tween.to(
               target,
               { scaleX: baseScale, scaleY: baseScale, x: initX, y: initY },
               {
-                duration: 300
+                duration: 300,
+                onComplete () {
+                  selectedCanvas.visible = true
+                }
               }
             )
           }
