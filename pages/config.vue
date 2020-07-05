@@ -2,12 +2,7 @@
   <div class="root">
     <h3 class="root__title-set">
       <input type="text"
-             v-if="isText"
-             v-model="questions.title"
-             placeholder="请输入标题">
-      <input v-else
-             type="text"
-             v-model="questionsImage.title"
+             v-model="title"
              placeholder="请输入标题">
     </h3>
 
@@ -63,7 +58,7 @@
                 v-if="!questionsImage.right[index].text">+请上传图片</span>
 
           <span class="root__delete"
-                style="top: 55px;"
+                style="top: 44px;"
                 :class="{'root__delete-none': questionsImage.left.length ===2}"
                 @click="deleteQuestion(index)">x</span>
         </p>
@@ -91,11 +86,6 @@
       </div>
     </div>
 
-    <div class="root__model"
-         v-if="visible">
-      {{tips}}
-    </div>
-
   </div>
 </template>
 
@@ -113,8 +103,7 @@
           right: [
             { id: 0, text: '' },
             { id: 1, text: '' },
-          ],
-          title: ''
+          ]
         },
         questionsImage: {
           left: [
@@ -125,13 +114,12 @@
             { id: 0, text: '' },
             { id: 1, text: '' },
           ],
-          title: ''
         },
-        tips: '',
         visible: false,
         target: 5,
         isText: true,
-        uploadImage: ''
+        uploadImage: '',
+        title: ''
       }
     },
     computed: {
@@ -150,8 +138,12 @@
       addQuestion () {
         this.target = this.isText ? 5 : 4
         if (this[this.questionsType].left.length >= this.target) {
-          this.tips = `最多添加${this.target}道题目`
-          this.tipsModel()
+
+          const tips = `【${this.isText ? '文-文' : '文-图'}】模式最多支持添加${this.target}个连线组`
+          this.$message({
+            message: tips,
+            type: 'warning'
+          })
           return
         }
         let createId = this[this.questionsType].left[this[this.questionsType].left.length - 1].id + 1
@@ -182,28 +174,48 @@
       async submitConfig () {
         const leftVerify = this[this.questionsType].left.every(item => item.text)
         if (!leftVerify) {
-          this.tips = `题目不能为空！`
-          this.tipsModel()
+          this.$message({
+            message: '题目不能为空！',
+            type: 'warning'
+          })
           return
         }
 
         const rightVerify = this[this.questionsType].right.every(item => item.text)
 
         if (!rightVerify) {
-          this.tips = `答案不能为空！`
-          this.tipsModel()
+          this.$message({
+            message: `答案不能为空！`,
+            type: 'warning'
+          })
           return
         }
 
-        if (!this[this.questionsType].title) {
-          this.tips = `请填写标题！`
-          this.tipsModel()
+        if (!this.title) {
+          this.$message({
+            message: `请填写标题！`,
+            type: 'warning'
+          })
+          return
+        }
+        const leftEqualArr = this[this.questionsType].left.map(item => item.text.replace(/\s+/g, ""))
+        const leftFilter = Array.from(new Set(leftEqualArr))
+
+        const rightEqualArr = this[this.questionsType].right.map(item => item.text.replace(/\s+/g, ""))
+        const rightFilter = Array.from(new Set(rightEqualArr))
+
+        if (leftEqualArr.length !== leftFilter.length || rightEqualArr.length !== rightFilter.length) {
+          this.$message({
+            message: `连线同侧内容不能重复`,
+            type: 'warning'
+          })
           return
         }
 
         this[this.questionsType].type = this.isText ? 'text' : 'image'
 
         let setQuestion = this[this.questionsType]
+        setQuestion.title = this.title
 
         try {
           await this.$testsave(null, JSON.stringify(setQuestion))
@@ -214,12 +226,6 @@
         this.$router.replace('/')
 
       },
-      tipsModel () {
-        this.visible = true
-        setTimeout(() => {
-          this.visible = false
-        }, 1000)
-      },
       toggle () {
         this.isText = !this.isText
         this.target = this.isText ? 5 : 4
@@ -229,14 +235,11 @@
 </script>
 <style scoped>
   .root {
-    min-width: 600px;
     margin: 0 auto;
   }
   .root__question {
     margin: 0 auto;
     width: 100%;
-    min-width: 600px;
-    min-height: 400px;
     overflow: scroll;
   }
   .root__question-item {
@@ -247,7 +250,7 @@
     cursor: pointer;
   }
   .root__image-item {
-    height: 130px;
+    height: 110px;
     margin-top: 8px;
     padding: 0;
   }
@@ -303,11 +306,11 @@
     margin-top: 20px;
   }
   .root__image-line {
-    width: calc(100% - 268px);
+    width: calc(100% - 228px);
     float: left;
     height: 1px;
     background: #585858;
-    margin-top: 65px;
+    margin-top: 55px;
   }
   .root__question-left {
     float: left;
@@ -343,7 +346,7 @@
     width: 100%;
     height: 40px;
     min-width: 450px;
-    bottom: 5%;
+    bottom: 10px;
     left: 0;
     text-align: center;
   }
@@ -358,7 +361,7 @@
     padding: 8px 20px;
     background: #ffb647;
     font-size: 12px;
-    border-radius: 130px;
+    border-radius: 110px;
     color: #fff;
     cursor: pointer;
   }
@@ -370,7 +373,7 @@
   .root__title-set {
     font-size: 16px;
     color: #5f5c5c;
-    margin: 3% 0 2%;
+    margin: 20px 0;
     text-align: center;
     width: 100%;
   }
@@ -403,20 +406,9 @@
     color: #fff;
     cursor: pointer;
   }
-  .root__model {
-    position: absolute;
-    left: 50%;
-    top: 10%;
-    transform: translateX(-50%);
-    background: #ffa921;
-    padding: 10px 40px;
-    border-radius: 4px;
-    color: #fff;
-  }
-
   .root__toggle {
     float: left;
-    border-radius: 130px;
+    border-radius: 110px;
     overflow: hidden;
     border: 1px solid #ccc;
     position: relative;
@@ -447,48 +439,57 @@
     color: #fff;
   }
   .root__upload {
-    width: 130px;
-    height: 130px;
+    width: 110px;
+    height: 110px;
     border: 1px solid #ccc;
     float: right;
     margin-bottom: 20px;
     position: relative;
     overflow: hidden;
     border-radius: 4px;
+    cursor: pointer;
   }
   .root__upload-set {
-    width: 130px;
-    height: 130px;
+    width: 110px;
+    height: 110px;
+    cursor: pointer;
   }
   .root__upload-image {
-    width: 128px;
-    height: 128px;
+    width: 108px;
+    height: 108px;
     position: absolute;
     left: 0;
     top: 0;
   }
 
+  .root__upload-image label {
+    cursor: pointer;
+  }
+
   .root__upload-tips {
     position: absolute;
-    top: 55px;
+    top: 45px;
     font-size: 14px;
     color: #787878;
-    right: 70px;
+    right: 55px;
+    cursor: pointer;
   }
 
   .root__image-left {
     float: left;
-    height: 130px;
+    height: 110px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    cursor: pointer;
   }
   .root__image-left input {
     border: none;
     font-size: 14px;
     margin-left: 5px;
     padding: 0 10px;
-    width: 130px;
+    width: 110px;
     background: none;
-    line-height: 130px;
+    line-height: 110px;
+    cursor: pointer;
   }
 </style>

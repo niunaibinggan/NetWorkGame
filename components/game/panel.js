@@ -233,7 +233,7 @@ export default class ResultPanel extends Hilo.Container {
         height: rect[3] * baseScale - (this.isText ? 15 : 50),
         x: leftX,
         y: index * this.distance + (this.isText ? 20 : 55),
-        color: this.isText ? '#fff' : '#d6b355',
+        color: '#9d6c3c',
       }).addTo(this.temporaryQuestionsContainer)
 
       this.panelClick('left',
@@ -271,7 +271,7 @@ export default class ResultPanel extends Hilo.Container {
           alpha: 1,
           x: this.rightX,
           y: index * this.distance + 20,
-          color: '#ffffff',
+          color: '#9d6c3c',
         }).addTo(this.temporaryQuestionsContainer)
       } else {
         const imageScaleBaese = 0.15
