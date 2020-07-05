@@ -240,7 +240,6 @@
   .root__question {
     margin: 0 auto;
     width: 100%;
-    overflow: scroll;
   }
   .root__question-item {
     width: 100%;
