@@ -24,19 +24,19 @@ export default function (data) {
 
     async load () {
       const resources = [
-        { id: 'bg', src: require('~/assets/bg.png') },
-        { id: 'errorIcon', src: require('~/assets/error.png') },
-        { id: 'questionLeft', src: isTest ? require('~/assets/question_left.png') : require('~/assets/question_image_left.png') },
-        { id: 'questionRight', src: isTest ? require('~/assets/question_right.png') : require('~/assets/question_image_right.png') },
-        { id: 'titleBg', src: require('~/assets/title.png') },
-        { id: 'errorLine', src: require('~/assets/error-line.png') },
-        { id: 'rightLine', src: require('~/assets/right-line.png') },
-        { id: 'submit', src: require('~/assets/submit.png') },
-        { id: 'errorModel', src: require('~/assets/answer_error.png') },
-        { id: 'rightModel', src: require('~/assets/answer.png') },
-        { id: 'rightBtn', src: require('~/assets/right_btn.png') },
-        { id: 'resetBtn', src: require('~/assets/reset_btn.png') },
-        { id: 'tipsLine', src: require('~/assets/line.png') },
+        { id: 'bg', src: require('~/static/bg.png') },
+        { id: 'errorIcon', src: require('~/static/error.png') },
+        { id: 'questionLeft', src: isTest ? require('~/static/question_left.png') : require('~/static/question_image_left.png') },
+        { id: 'questionRight', src: isTest ? require('~/static/question_right.png') : require('~/static/question_image_right.png') },
+        { id: 'titleBg', src: require('~/static/title.png') },
+        { id: 'errorLine', src: require('~/static/error-line.png') },
+        { id: 'rightLine', src: require('~/static/right-line.png') },
+        { id: 'submit', src: require('~/static/submit.png') },
+        { id: 'errorModel', src: require('~/static/answer_error.png') },
+        { id: 'rightModel', src: require('~/static/answer.png') },
+        { id: 'rightBtn', src: require('~/static/right_btn.png') },
+        { id: 'resetBtn', src: require('~/static/reset_btn.png') },
+        { id: 'tipsLine', src: require('~/static/line.png') },
       ]
       this.queue = new Hilo.LoadQueue()
       this.queue.add(resources)

@@ -103,7 +103,7 @@
         const oBgWarpper = Hilo.createElement('div', {
           id: 'bg',
           style: {
-            // background: `url(${require('~/assets/bg.png')}) no-repeat`,
+            // background: `url(${require('~/static/bg.png')}) no-repeat`,
             backgroundSize: bgWidth + 'px, ' + bgHeight + 'px',
             position: 'absolute',
             width: bgWidth + 'px',

@@ -167,8 +167,8 @@
           { id: 1, text: 'banana' },
         ]
         this.questionsImage.right = [
-          { id: 0, text: require('~/assets/apple.jpg') },
-          { id: 1, text: require('~/assets/banana.jpg') }
+          { id: 0, text: require('~/static/apple.jpg') },
+          { id: 1, text: require('~/static/banana.jpg') }
         ]
       },
       async submitConfig () {
@@ -233,7 +233,7 @@
     }
   }
 </script>
-<style scoped>
+<style>
   .root {
     margin: 0 auto;
   }
@@ -461,7 +461,7 @@
     top: 0;
   }
 
-  .root__upload-image label {
+  .root__upload .file-uploads.file-uploads-html5 label {
     cursor: pointer;
   }
 
