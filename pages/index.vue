@@ -1,7 +1,6 @@
 <template>
   <div class="container"
        ref="container"></div>
-
 </template>
 
 <script>
@@ -71,9 +70,6 @@
 
       const { bg, titleBg } = this.assets
 
-      // 初始化背景
-      this.initBackground()
-
       // 准备场景
       const exportScence = new ExportScence({
         x: 0,
@@ -92,27 +88,6 @@
 
     },
     methods: {
-      initBackground () {
-
-        const oCanvas = document.querySelector('canvas')
-
-        const oContainer = document.querySelector('.container')
-
-        const { width: bgWidth, height: bgHeight } = oCanvas.getBoundingClientRect()
-
-        const oBgWarpper = Hilo.createElement('div', {
-          id: 'bg',
-          style: {
-            // background: `url(${require('~/static/bg.png')}) no-repeat`,
-            backgroundSize: bgWidth + 'px, ' + bgHeight + 'px',
-            position: 'absolute',
-            width: bgWidth + 'px',
-            height: bgHeight + 'px'
-          }
-        })
-
-        oContainer.insertBefore(oBgWarpper, this.stage.canvas);
-      },
       createPanel (type = 'panel') {
         const { questionLeft, questionRight, errorLine, rightLine, questionsImage, errorIcon, tipsLine } = this.assets
         // 插入题目 两个板块之间的距离 300 每个背景板的长度 499 106
