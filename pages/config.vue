@@ -90,7 +90,8 @@
 </template>
 
 <script>
-  import Upload from "~/components/Upload";
+  import Upload from "~/components/Upload"
+  import save from '~/components/game/save'
   export default {
     components: { Upload },
     data () {
@@ -151,6 +152,7 @@
         this[this.questionsType].right.push({ id: createId, text: '' })
       },
       defalutConfig () {
+        this.title = "连线游戏"
         if (this.isText) {
           this.questions.left = [
             { id: 0, text: '9 + 8' },
@@ -218,11 +220,11 @@
         setQuestion.title = this.title
 
         try {
-          await this.$testsave(null, JSON.stringify(setQuestion))
+          const thumbnail = await save(setQuestion)
+          await this.$testsave(thumbnail, JSON.stringify(setQuestion))
         } catch (error) {
           localStorage.setItem('questionsConfig', JSON.stringify(setQuestion))
         }
-
         this.$router.replace('/')
 
       },

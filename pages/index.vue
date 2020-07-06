@@ -173,7 +173,7 @@
           images: { rightModel: this.assets.rightModel, errorModel: this.assets.errorModel },
           width: 1920,
           height: 1080,
-          rect: [-(1920 - 758) / 2, -(1080 - 600) / 2, 1920, 1080],
+          rect: [-(1920 - 758) / 2, -(1080 - 404 * 0.7) / 2, 1920, 1080],
           isAllRight: this.isAllRight && this.questions.left.length,
           visible: true,
           alpha: this.setAlpha
@@ -187,7 +187,7 @@
           this.questionsSubmitCanvas.visible = false
           this.stage.removeChild(resultModel)
           this.questionsResetCanvas.visible = true
-        }, 3000)
+        }, 2000)
         return resultModel
       },
       createRestButtons () {

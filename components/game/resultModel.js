@@ -18,10 +18,12 @@ export default class ResultModel extends Hilo.Container {
     const readyImage = properties.isAllRight ? properties.images.rightModel : properties.images.errorModel
 
     new Hilo.Bitmap({
-      x: 0,
+      x: properties.rect[2] * 0.3 / 2,
       y: 0,
       image: readyImage,
       rect: properties.rect,
+      scaleX: 0.7,
+      scaleY: 0.7,
     }).addTo(this)
 
   }
