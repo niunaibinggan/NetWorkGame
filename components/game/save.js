@@ -2,7 +2,7 @@ import AssetsFectory from '~/components/game/asset'
 import StageFectory from '~/components/game/stage'
 import ExportScence from '~/components/game/exportScence'
 import SubmitButton from '~/components/game/submitButton'
-import Panel from '~/components/game/panel'
+import PanelImage from '~/components/game/panelImage'
 
 export default async function init (questions) {
   // const  // 接入hilo动画引擎
@@ -39,7 +39,7 @@ export default async function init (questions) {
   // 题目
   const { questionLeft, questionRight, errorLine, rightLine, questionsImage, errorIcon, tipsLine } = assets
   // 插入题目 两个板块之间的距离 300 每个背景板的长度 499 106
-  const panel = new Panel({
+  const panel = new PanelImage({
     // x: (1920 - 499 * 2 - 300) / 2,
     // y: 320 - (this.questions.left.length * 10),
     x: 0,
@@ -57,10 +57,11 @@ export default async function init (questions) {
   stage.addChild(exportScence)
   stage.addChild(subBtn)
   stage.addChild(panel)
-
   return new Promise((re) => {
     ticker.nextTick(() => {
-      re(stage.canvas.toDataURL('image/png'))
+      setTimeout(() => {
+        re(stage.canvas.toDataURL('image/png'))
+      }, 500)
     })
   })
 }
