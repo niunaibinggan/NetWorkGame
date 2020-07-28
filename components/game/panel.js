@@ -343,6 +343,7 @@ export default class ResultPanel extends Hilo.Container {
     properties, initX, initY, baseScale,
     targetScale, rect) {
     eventTarget.on(Hilo.event.POINTER_START, (e) => {
+      if (properties.type !== 'panel') return
       this.readyLine = {
         isStart: true,
         x: e.stageX,
