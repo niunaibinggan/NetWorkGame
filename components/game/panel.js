@@ -343,10 +343,6 @@ export default class ResultPanel extends Hilo.Container {
         .endFill()
         .addTo(this.temporaryLinesMove)
     })
-
-    this.submitBtn.on(Hilo.event.POINTER_MOVE, (e) => {
-      this.isEnd = true
-    })
   }
 
   panelClick (type, eventTarget, target,
@@ -354,6 +350,7 @@ export default class ResultPanel extends Hilo.Container {
     targetScale, rect) {
     const that = this
     eventTarget.on(Hilo.event.POINTER_START, (e) => {
+      if (properties.type !== 'panel') return
       this.readyLine = {
         isStart: true,
         x: e.stageX,
