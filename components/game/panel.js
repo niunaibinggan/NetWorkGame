@@ -6,8 +6,6 @@ export default class ResultPanel extends Hilo.Container {
 
     this.stage = properties.stage
 
-    this.submitBtn = properties.submitBtn
-
     this.creatContainer()
 
     this.isText = (properties.questions.type === 'text')
@@ -57,10 +55,6 @@ export default class ResultPanel extends Hilo.Container {
   temporaryLinesMove = null
 
   questionsLength = 0
-
-  submitBtn = null
-
-  isEnd = false
 
   // Math.atan2(1, 1)*180/Math.PI
   creatContainer () {
@@ -348,9 +342,7 @@ export default class ResultPanel extends Hilo.Container {
   panelClick (type, eventTarget, target,
     properties, initX, initY, baseScale,
     targetScale, rect) {
-    const that = this
     eventTarget.on(Hilo.event.POINTER_START, (e) => {
-      if (properties.type !== 'panel') return
       this.readyLine = {
         isStart: true,
         x: e.stageX,
