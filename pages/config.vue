@@ -120,13 +120,26 @@
         target: 5,
         isText: true,
         uploadImage: '',
-        title: ''
+        title: '',
+        isWaiting: false
       }
     },
     computed: {
       questionsType () {
         return this.isText ? 'questions' : 'questionsImage'
       }
+    },
+    async mounted () {
+      let questions
+      try {
+        questions = await this.$testload()
+      } catch (error) {
+        questions = localStorage.getItem('questionsConfig')
+      }
+      if (!questions) return
+      if (JSON.parse(questions).type === 'text') this.questions = JSON.parse(questions)
+      else this.questionsImage = JSON.parse(questions)
+      this.title = JSON.parse(questions).title
     },
     methods: {
       upload (data) {
@@ -174,6 +187,7 @@
         ]
       },
       async submitConfig () {
+        if (this.isWaiting) return
         const leftVerify = this[this.questionsType].left.every(item => item.text)
         if (!leftVerify) {
           this.$message({
@@ -220,11 +234,13 @@
         setQuestion.title = this.title
 
         try {
+          this.isWaiting = true
           const thumbnail = await save(setQuestion)
           await this.$testsave(thumbnail, JSON.stringify(setQuestion))
         } catch (error) {
           localStorage.setItem('questionsConfig', JSON.stringify(setQuestion))
         }
+        this.isWaiting = false
         this.$router.replace('/')
 
       },

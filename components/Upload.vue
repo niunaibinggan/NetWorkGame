@@ -33,7 +33,7 @@
 
         if (!tag) {
           this.$message({
-            message: `只支持图片/视频/音频哦`,
+            message: `只支持图哦`,
             type: 'warning'
           })
           return false

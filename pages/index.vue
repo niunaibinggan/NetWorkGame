@@ -81,10 +81,10 @@
 
       // 插入背景
       this.stage.addChild(exportScence)
+      this.questionsSubmitCanvas = this.createSubmitButton()
 
       this.questionsPanelCanvas = this.createPanel('panel')
 
-      this.questionsSubmitCanvas = this.createSubmitButton()
 
     },
     methods: {
@@ -103,7 +103,8 @@
           answerRealIds: this.answerRealIds,
           resultIds: this.resultIds,
           type,
-          stage: this.stage
+          stage: this.stage,
+          submitBtn: this.questionsSubmitCanvas
         })
         this.stage.addChild(panel)
         return panel
