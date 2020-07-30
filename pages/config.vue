@@ -464,6 +464,7 @@
     border-radius: 4px;
     color: #5f6c65;
     cursor: pointer;
+    margin-right: 130px;
   }
   .root__toggle {
     float: left;
@@ -472,6 +473,7 @@
     border: 1px solid #ccc;
     position: relative;
     color: #868786;
+    margin-left: 130px;
   }
   .root__toggle::after {
     content: "";
