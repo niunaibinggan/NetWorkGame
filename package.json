@@ -14,7 +14,7 @@
     "element-ui": "^2.4.11",
     "hilojs": "^2.0.0",
     "num2capital": "^1.0.5",
-    "nuxt": "^2.13.2",
+    "nuxt": "^3.4.3",
     "sass-loader": "^8.0.2",
     "vue-upload-component": "^2.8.20"
   },
